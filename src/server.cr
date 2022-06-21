@@ -10,7 +10,7 @@ class Server
 
   def start : Void
     address = @server.bind_tcp 8080
-    puts "Listening on http://#{address}"
+    Parrot::Log.info { "Listening on http://#{address}" }
     @server.listen
   end
 
