@@ -1,5 +1,5 @@
 module Parrot
-  class Handler 
+  class Handler
     include HTTP::Handler
 
     def call(context)

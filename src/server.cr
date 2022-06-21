@@ -1,10 +1,9 @@
 class Server
-
   @server = HTTP::Server.new(handlers)
 
   def self.handlers : Array(HTTP::Handler)
     [
-      Parrot::Handler.new
+      Parrot::Handler.new,
     ] of HTTP::Handler
   end
 
@@ -17,5 +16,4 @@ class Server
   def stop : Void
     @server.close
   end
-
 end
