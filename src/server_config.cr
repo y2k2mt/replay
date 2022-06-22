@@ -1,14 +1,11 @@
 class ServerConfig
+  enum Mode
+    Record
+    Replay
+  end
 
- enum Mode
-   Record
-   Replay
- end
+  getter base_url, port, mode
 
- getter base_url,port,mode
-
- def initialize(@base_url : String,@port : Int16, @mode : Mode)
- end
-
-
+  def initialize(@base_url : String, @port : Int16, @mode : Mode)
+  end
 end

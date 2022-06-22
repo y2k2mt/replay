@@ -7,6 +7,7 @@ module Parrot
       call_next(context)
     end
   end
+
   class RepeatingHandler
     include HTTP::Handler
 

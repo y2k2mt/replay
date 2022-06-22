@@ -1,5 +1,4 @@
 class Server
-
   def initialize(@config : ServerConfig)
     @server = HTTP::Server.new(handlers(config))
   end

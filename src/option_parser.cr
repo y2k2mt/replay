@@ -27,9 +27,8 @@ OptionParser.parse do |parser|
     mode = ServerConfig::Mode::Replay
     base_url = url
   end
-
 end
 
 base_url.try do |url|
-  start_server(ServerConfig.new(url,server_port,mode))
+  start_server(ServerConfig.new(url, server_port, mode))
 end
