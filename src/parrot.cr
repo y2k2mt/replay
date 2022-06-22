@@ -1,4 +1,4 @@
-require "./start_server"
+require "./option_parser"
 
 # TODO: Write documentation for `Parrot`
 module Parrot
