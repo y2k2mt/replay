@@ -1,5 +1,9 @@
 require "./start_server"
 
+server_port = 8080_i16
+mode = ServerConfig::Mode::Replay
+base_url : String? = nil
+
 OptionParser.parse do |parser|
   parser.banner = "Parrot: Record and Preplay!"
 
@@ -11,8 +15,21 @@ OptionParser.parse do |parser|
     puts parser
     exit
   end
-  parser.on "-r=URL", "--record=URL", "Run as recording mode" do |url|
-    start_server
-    exit
+
+  parser.on "-p=PORT", "--port=PORT", "Server port" do |port|
+    serer_port = port
   end
+  parser.on "-r URL", "--record=URL", "Run as recording mode" do |url|
+    mode = ServerConfig::Mode::Record
+    base_url = url
+  end
+  parser.on "-R URL", "--replay=URL", "Run as replaying mode" do |url|
+    mode = ServerConfig::Mode::Replay
+    base_url = url
+  end
+
+end
+
+base_url.try do |url|
+  start_server(ServerConfig.new(url,server_port,mode))
 end
