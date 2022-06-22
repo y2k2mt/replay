@@ -17,7 +17,9 @@ OptionParser.parse do |parser|
   end
 
   parser.on "-p=PORT", "--port=PORT", "Server port" do |port|
-    server_port = port
+    port.to_i16?.try do |port_number|
+      server_port = port_number
+    end
   end
   parser.on "-r URL", "--record=URL", "Run as recording mode" do |url|
     mode = ServerConfig::Mode::Record
