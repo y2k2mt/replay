@@ -3,7 +3,8 @@ module Parrot
     include HTTP::Handler
 
     def call(context)
-      puts "Do recording"
+      record = RequestRecord.new(context)
+      RequestRecords.recording(record)
       call_next(context)
     end
   end
@@ -12,7 +13,7 @@ module Parrot
     include HTTP::Handler
 
     def call(context)
-      puts "Do repeating"
+      found = RequestRecords.request_match?(context)
       call_next(context)
     end
   end

@@ -1,5 +1,7 @@
 require "./shards"
 require "./logger"
 require "./server_config"
+require "./request_record"
+require "./request_records"
 require "./handler"
 require "./server"
