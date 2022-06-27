@@ -6,11 +6,17 @@ module Parrot
     end
 
     def call(context)
-
-      response = HTTP::Client.new(@config.base_url).exec(context.request)
-      record = RequestRecord.new(context)
-      RequestRecords.recording(record)
-      call_next(HTTP::Server::Context.new(context.request,response))
+      uri = URI.parse(@config.base_url)
+      uri.host.try do |host|
+        context.request.headers["Host"] = host
+      end
+      client_response = HTTP::Client.new(uri).exec(context.request)
+      #record = RequestRecord.new(context)
+      #RequestRecords.recording(record)
+      client_response.to_io(context.response)
+      #context.response.headers = client_response.headers
+      #context.response.body = client_response.body
+      #call_next(HTTP::Server::Context.new(context.request,response))
     end
   end
 
