@@ -9,7 +9,7 @@ class Server
     when ServerConfig::Mode::Replay
       handlers << Parrot::RepeatingHandler.new
     when ServerConfig::Mode::Record
-      handlers << Parrot::RecordingHandler.new
+      handlers << Parrot::RecordingHandler.new(config)
     end
     handlers
   end
