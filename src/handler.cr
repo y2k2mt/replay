@@ -13,9 +13,9 @@ module Parrot
       client_response = HTTP::Client.new(uri).exec(context.request)
       #record = RequestRecord.new(context)
       #RequestRecords.recording(record)
-      client_response.to_io(context.response)
-      #context.response.headers = client_response.headers
-      #context.response.body = client_response.body
+      context.response.headers.merge!(client_response.headers)
+      context.response.puts(client_response.body)
+      context.response.flush
       #call_next(HTTP::Server::Context.new(context.request,response))
     end
   end
