@@ -1,4 +1,4 @@
 class RequestRecord
-  def initialize(context)
+  def initialize(base_uri,request,client_response)
   end
 end

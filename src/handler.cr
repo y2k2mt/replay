@@ -2,21 +2,20 @@ module Parrot
   class RecordingHandler
     include HTTP::Handler
 
+    @base_uri : URI
+
     def initialize(@config : ServerConfig)
+      @base_uri = URI.parse(@config.base_url).not_nil!
     end
 
     def call(context)
-      uri = URI.parse(@config.base_url)
-      uri.host.try do |host|
-        context.request.headers["Host"] = host
-      end
-      client_response = HTTP::Client.new(uri).exec(context.request)
-      #record = RequestRecord.new(context)
-      #RequestRecords.recording(record)
+      context.request.headers["Host"] = @base_uri.host.not_nil!
+      client_response = HTTP::Client.new(@base_uri).exec(context.request)
+      RequestRecords.recording(
+        RequestRecord.new(@base_uri,context.request,client_response)
+      )
       context.response.headers.merge!(client_response.headers)
       context.response.puts(client_response.body)
-      context.response.flush
-      #call_next(HTTP::Server::Context.new(context.request,response))
     end
   end
 
