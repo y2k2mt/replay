@@ -18,6 +18,10 @@ class Config
     end || raise "Invalid configuration [base_url] : #{@base_url}"
   }
 
+  getter(recorder : Recorder) {
+    FileSystemRecorder.new
+  }
+
   def initialize(@base_url : String, @port : Int16, @mode : Mode)
   end
 end
