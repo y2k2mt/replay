@@ -17,8 +17,8 @@ module Parrot
     def call(context)
       context.request.headers["Host"] = @base_uri_host
       client_response = HTTP::Client.new(@base_uri).exec(context.request)
-      RequestRecords.recording(
-        RequestRecord.new(@base_uri, context.request, client_response)
+      Records.recording(
+        Record.new(@base_uri, context.request, client_response)
       )
       context.response.headers.merge!(client_response.headers)
       context.response.puts(client_response.body)
@@ -29,7 +29,7 @@ module Parrot
     include HTTP::Handler
 
     def call(context)
-      found = RequestRecords.request_match?(context)
+      found = Records.request_match?(context)
       call_next(context)
     end
   end

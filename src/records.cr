@@ -1,4 +1,4 @@
-class RequestRecords
+class Records
   def self.init(@@config : ServerConfig)
   end
 
@@ -7,7 +7,7 @@ class RequestRecords
     nil
   end
 
-  def self.recording(record : RequestRecord)
+  def self.recording(record : Record)
     # TODO: implement
   end
 end
