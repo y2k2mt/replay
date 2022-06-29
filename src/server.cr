@@ -7,7 +7,7 @@ class Server
     handlers = [] of HTTP::Handler
     case config.mode
     when Config::Mode::Replay
-      handlers << Parrot::RepeatingHandler.new
+      handlers << Parrot::RepeatingHandler.new(config)
     when Config::Mode::Record
       handlers << Parrot::RecordingHandler.new(config)
     end

@@ -22,6 +22,10 @@ class Config
     FileSystemRecorder.new
   }
 
+  getter(indexer : Indexer) {
+    FileSystemIndexer.new
+  }
+
   def initialize(@base_url : String, @port : Int16, @mode : Mode)
   end
 end
