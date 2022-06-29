@@ -7,7 +7,7 @@ class FileSystemRecorder
   include Recorder
 
   def record(record : Record) : Record
-    #TODO: impl
+    # TODO: impl
     record
   end
 end

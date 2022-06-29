@@ -9,9 +9,9 @@ module Parrot
       context.request.headers["Host"] = @config.base_uri_host
       client_response = HTTP::Client.new(@config.base_uri).exec(context.request)
       @config.indexer.index(
-      @config.recorder.record(
-        Record.new(@config.base_uri, context.request, client_response)
-      )
+        @config.recorder.record(
+          Record.new(@config.base_uri, context.request, client_response)
+        )
       )
       context.response.headers.merge!(client_response.headers)
       context.response.puts(client_response.body)
