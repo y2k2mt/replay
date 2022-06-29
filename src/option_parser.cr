@@ -1,7 +1,7 @@
 require "./start_server"
 
 server_port = 8080_i16
-mode = ServerConfig::Mode::Replay
+mode = Config::Mode::Replay
 base_url : String? = nil
 
 OptionParser.parse do |parser|
@@ -22,15 +22,15 @@ OptionParser.parse do |parser|
     end
   end
   parser.on "-r URL", "--record=URL", "Run as recording mode" do |url|
-    mode = ServerConfig::Mode::Record
+    mode = Config::Mode::Record
     base_url = url
   end
   parser.on "-R URL", "--replay=URL", "Run as replaying mode" do |url|
-    mode = ServerConfig::Mode::Replay
+    mode = Config::Mode::Replay
     base_url = url
   end
 end
 
 base_url.try do |url|
-  start_server(ServerConfig.new(url, server_port, mode))
+  start_server(Config.new(url, server_port, mode))
 end

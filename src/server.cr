@@ -1,14 +1,14 @@
 class Server
-  def initialize(@config : ServerConfig)
+  def initialize(@config : Config)
     @server = HTTP::Server.new(handlers(config))
   end
 
-  def handlers(config : ServerConfig) : Array(HTTP::Handler)
+  def handlers(config : Config) : Array(HTTP::Handler)
     handlers = [] of HTTP::Handler
     case config.mode
-    when ServerConfig::Mode::Replay
+    when Config::Mode::Replay
       handlers << Parrot::RepeatingHandler.new
-    when ServerConfig::Mode::Record
+    when Config::Mode::Record
       handlers << Parrot::RecordingHandler.new(config)
     end
     handlers

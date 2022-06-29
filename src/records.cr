@@ -1,5 +1,5 @@
 class Records
-  def self.init(@@config : ServerConfig)
+  def self.init(@@config : Config)
   end
 
   def self.request_match?(context)

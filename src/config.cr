@@ -1,4 +1,4 @@
-class ServerConfig
+class Config
   enum Mode
     Record
     Replay

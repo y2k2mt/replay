@@ -1,6 +1,6 @@
 require "./app"
 
-def start_server(config : ServerConfig)
+def start_server(config : Config)
   server = Server.new(config)
 
   Signal::INT.trap do

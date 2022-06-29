@@ -2,7 +2,7 @@ module Parrot
   class RecordingHandler
     include HTTP::Handler
 
-    def initialize(@config : ServerConfig)
+    def initialize(@config : Config)
     end
 
     def call(context)

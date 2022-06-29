@@ -1,6 +1,6 @@
 require "./shards"
 require "./logger"
-require "./server_config"
+require "./config"
 require "./record"
 require "./records"
 require "./handler"
