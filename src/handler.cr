@@ -15,7 +15,7 @@ module Parrot
       )
       case index_or_die
       when Indexer::IndexError
-        context.response.status = HTTP::Status::INTERNAL_SERVER_ERROR 
+        context.response.status = HTTP::Status::INTERNAL_SERVER_ERROR
         context.response.puts index_or_die.message
       else
         context.response.headers.merge!(client_response.headers)
