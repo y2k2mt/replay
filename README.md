@@ -24,4 +24,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [y2k2mt](https://github.com/your-github-user) - creator and maintainer
+- [y2k2mt](https://github.com/y2k2mt) - creator and maintainer
