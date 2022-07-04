@@ -14,7 +14,11 @@ struct Record
     @body = client_response.body_io
   end
 
-  def create_index
+  def index
     Base64.encode((Digest::SHA256.new << uri.path << @method << headers["Content-Type"]).final)
+  end
+
+  def index_conditions
+    headers.to_h
   end
 end
