@@ -4,7 +4,7 @@ class Config
     Replay
   end
 
-  getter port, mode
+  getter port, mode, base_dir_path
 
   getter(base_uri : URI) {
     @base_url.try do |url|
@@ -19,13 +19,13 @@ class Config
   }
 
   getter(recorder : Recorder) {
-    FileSystemRecorder.new
+    FileSystemRecorder.new(self)
   }
 
   getter(indexer : Indexer) {
     FileSystemIndexer.new
   }
 
-  def initialize(@base_url : String, @port : Int16, @mode : Mode)
+  def initialize(@base_url : String, @port : Int16, @mode : Mode,@base_dir_path = Path.home)
   end
 end

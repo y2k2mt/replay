@@ -9,7 +9,6 @@ module Parrot
       context.request.headers["Host"] = @config.base_uri_host
       client_response = HTTP::Client.new(@config.base_uri).exec(context.request)
       index_or_die = @config.recorder.record(
-        @config.indexer,
         Record.new(@config.base_uri, context.request, client_response)
       )
       case index_or_die
