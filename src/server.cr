@@ -15,7 +15,7 @@ class Server
   end
 
   def start : Void
-    address = @server.bind_tcp 8080
+    address = @server.bind_tcp @config.port
     Parrot::Log.info { "Listening on http://#{address}" }
     Parrot::Log.info { "Running as #{@config.mode}ing mode for #{@config.base_uri}" }
     @server.listen
