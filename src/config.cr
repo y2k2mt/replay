@@ -22,10 +22,6 @@ class Config
     FileSystemRecorder.new(self)
   }
 
-  getter(indexer : Indexer) {
-    FileSystemIndexer.new
-  }
-
   def initialize(@base_url : String, @port : Int16, @mode : Mode,@base_dir_path = "#{Path.home}/.parrot")
   end
 end
