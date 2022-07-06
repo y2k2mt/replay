@@ -1,5 +1,4 @@
 struct Index
-
   @method : String
   @path : String
   @headers : HTTP::Headers
@@ -17,6 +16,6 @@ struct Index
   end
 
   def index_conditions
-    @headers.to_h.merge({"path" => @path,"method" => @method})
+    @headers.to_h.merge({"path" => @path, "method" => @method})
   end
 end

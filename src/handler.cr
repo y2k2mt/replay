@@ -24,7 +24,7 @@ module Parrot
     end
 
     def call(context)
-      #found = @config.indexer.request_match(context.request)
+      # found = @config.indexer.request_match(context.request)
       call_next(context)
     end
   end
