@@ -15,7 +15,9 @@ struct Record
   end
 
   def index
-    Base64.encode((Digest::SHA256.new << uri.path << @method).final)
+    Digest::SHA256.hexdigest do |ctx|
+      ctx << uri.path << @method
+    end
   end
 
   def index_conditions
