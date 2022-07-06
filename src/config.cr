@@ -26,6 +26,6 @@ class Config
     FileSystemIndexer.new
   }
 
-  def initialize(@base_url : String, @port : Int16, @mode : Mode,@base_dir_path = Path.home)
+  def initialize(@base_url : String, @port : Int16, @mode : Mode,@base_dir_path = "#{Path.home}/.parrot")
   end
 end
