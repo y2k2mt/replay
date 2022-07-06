@@ -11,10 +11,19 @@ class FileSystemRecorder
 
   def record(record : Record) : Record
     index = record.index
-    index_file_path = "#{@config.base_dir_path}/indexes/#{index}"
-    File.write(index_file_path,record.index_conditions)
-    reply_file_path = "#{@config.base_dir_path}/replies/#{index}"
-    File.write(reply_file_path,record.body)
+    index_file_dir = "#{@config.base_dir_path}/indexes"
+    if(!File.directory?(index_file_dir))
+      Dir.mkdir(index_file_dir)
+    end
+    File.open("#{index_file_dir}/#{index}","w+")
+    File.write("#{index_file_dir}/#{index}",record.index_conditions)
+
+    reply_file_dir = "#{@config.base_dir_path}/replies"
+    if(!File.directory?(reply_file_dir))
+      Dir.mkdir(reply_file_dir)
+    end
+    File.open("#{reply_file_dir}/#{index}","w+")
+    File.write("#{reply_file_dir}/#{index}",record.body)
     record
   end
 end

@@ -4,18 +4,18 @@ struct Record
   @uri : URI
   @method : String
   @headers : HTTP::Headers
-  @body : IO
+  @body : String
 
   def initialize(base_uri, request, client_response)
     base_uri.path = request.path
     @uri = base_uri
     @method = request.method
-    @headers = request.headers
-    @body = client_response.body_io
+    @headers = client_response.headers
+    @body = client_response.body
   end
 
   def index
-    Base64.encode((Digest::SHA256.new << uri.path << @method << headers["Content-Type"]).final)
+    Base64.encode((Digest::SHA256.new << uri.path << @method).final)
   end
 
   def index_conditions
