@@ -12,14 +12,24 @@ struct Index
   end
 
   def index
-    header_digest = Digest::SHA256.hexdigest do |ctx|
+    meta_digest = Digest::SHA256.hexdigest do |ctx|
       ctx << @path << @method
-      @indexed_header_names.each do |name|
-        ctx << @headers[name]
+    end
+    header_digest = Digest::SHA256.hexdigest do |ctx|
+      index_conditions["indexed"].each do |_, v|
+        case v
+        when String
+          ctx << v
+        when Array(String)
+          v.each do |x|
+            ctx << x
+          end
+        end
       end
     end
     # TODO: Add param_digest
-    header_digest
+    # "#{meta_digest}_#{header_digest}_#{param_digest}"
+    "#{meta_digest}_#{header_digest}"
   end
 
   def index_conditions
