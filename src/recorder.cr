@@ -16,7 +16,7 @@ class FileSystemRecorder
       Dir.mkdir_p(index_file_dir)
     end
     File.open("#{index_file_dir}/#{index_hash}", "w+")
-    File.write("#{index_file_dir}/#{index_hash}", index.index_conditions.to_json)
+    File.write("#{index_file_dir}/#{index_hash}", index.index_conditions.to_pretty_json)
 
     reply_file_dir = "#{@config.base_dir_path}/replies"
     if (!File.directory?(reply_file_dir))
