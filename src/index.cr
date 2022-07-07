@@ -10,12 +10,18 @@ struct Index
   end
 
   def index
-    Digest::SHA256.hexdigest do |ctx|
-      ctx << @path << @method << @headers.to_json
+    header_digest = Digest::SHA256.hexdigest do |ctx|
+      ctx << @path << @method << @headers["Host"]
     end
+    #TODO: Add param_digest
+    header_digest
   end
 
   def index_conditions
-    @headers.to_h.merge({"path" => @path, "method" => @method})
+    candidates = @headers.to_h.partition { |k,_| k == "Host" }
+    {
+      "indexed" => candidates[0].to_h.merge({"path" => @path, "method" => @method}),
+      "not_indexed" => candidates[1].to_h
+    }
   end
 end
