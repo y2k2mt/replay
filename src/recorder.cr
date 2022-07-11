@@ -30,7 +30,7 @@ class FileSystemRecorder
   end
 
   def find(index : Index) : Record?
-    #TODO: impl
+    # TODO: impl
     nil
   end
 end
