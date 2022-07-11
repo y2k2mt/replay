@@ -27,8 +27,8 @@ module Parrot
       requested_index = Index.new(context.request)
       found = @config.recorder.find(requested_index)
       found.try do |f|
-        context.response.headers.merge!(record.headers)
-        context.response.puts record.body
+        context.response.headers.merge!(f.headers)
+        context.response.puts f.body
       end || (
         context.response.status_code = 404
         context.response.puts "Not recorded yet!"

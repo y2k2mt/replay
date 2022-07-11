@@ -1,5 +1,5 @@
 struct Record
-  getter uri, method, headers, body
+  getter headers, body
 
   @headers : HTTP::Headers
   @body : String
