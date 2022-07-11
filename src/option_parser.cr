@@ -16,16 +16,16 @@ OptionParser.parse do |parser|
     exit
   end
 
-  parser.on "-p=PORT", "--port=PORT", "Server port" do |port|
+  parser.on "-p PORT", "--port PORT", "Server port" do |port|
     port.to_i16?.try do |port_number|
       server_port = port_number
     end
   end
-  parser.on "-r URL", "--record=URL", "Run as recording mode" do |url|
+  parser.on "-r URL", "--record URL", "Run as recording mode" do |url|
     mode = Config::Mode::Record
     base_url = url
   end
-  parser.on "-R URL", "--replay=URL", "Run as replaying mode" do |url|
+  parser.on "-R URL", "--replay URL", "Run as replaying mode" do |url|
     mode = Config::Mode::Replay
     base_url = url
   end
