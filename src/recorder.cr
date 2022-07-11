@@ -28,4 +28,9 @@ class FileSystemRecorder
     File.write("#{reply_file_dir}/#{index_hash}", record.body)
     record
   end
+
+  def find(index : Index) : Record?
+    #TODO: impl
+    nil
+  end
 end
