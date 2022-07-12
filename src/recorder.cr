@@ -28,6 +28,7 @@ class FileSystemRecorder
     File.write("#{@reply_file_dir}/#{index_hash}", record.body)
     record
   end
+
   record ApiResponse, params : Hash(String, Array(String)) do
     include JSON::Serializable
   end
@@ -36,13 +37,13 @@ class FileSystemRecorder
     index_hash = index.index
     body_file = Dir["#{@reply_file_dir}/#{index_hash}"].first?
     header_file = Dir["#{@reply_file_dir}/#{index_hash}_headers"].first?
-    if(header_file && body_file)
+    if (header_file && body_file)
       response_headers = HTTP::Headers.new
-      Hash(String,Array(String)).from_json(JSON.parse(File.read(header_file)).to_json).map do |k,v|
+      Hash(String, Array(String)).from_json(JSON.parse(File.read(header_file)).to_json).map do |k, v|
         response_headers[k] = v
       end
       response_body = File.read(body_file)
-      Record.new(response_headers,response_body)
+      Record.new(response_headers, response_body)
     else
       nil
     end

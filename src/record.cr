@@ -9,6 +9,6 @@ struct Record
     @body = client_response.body
   end
 
-  def initialize(@headers : HTTP::Headers,@body : String)
+  def initialize(@headers : HTTP::Headers, @body : String)
   end
 end
