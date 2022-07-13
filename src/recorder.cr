@@ -34,17 +34,17 @@ class FileSystemRecorder
     body_file = Dir["#{@reply_file_dir}/#{index_hash}"].first?
     header_file = Dir["#{@reply_file_dir}/#{index_hash}_headers"].first?
     if (header_file && body_file)
-      Parrot::Log.debug {"FileSystemRecorder: header_file path #{header_file}"}
-      Parrot::Log.debug {"FileSystemRecorder: body_file path #{body_file}"}
+      Parrot::Log.debug { "FileSystemRecorder: header_file path #{header_file}" }
+      Parrot::Log.debug { "FileSystemRecorder: body_file path #{body_file}" }
       response_headers = HTTP::Headers.new
       Hash(String, Array(String)).from_json(JSON.parse(File.read(header_file)).to_json).map do |k, v|
         response_headers[k] = v
       end
       response_body = File.read(body_file)
-      Parrot::Log.debug {"FileSystemRecorder: recorded response headers: #{response_headers}"}
+      Parrot::Log.debug { "FileSystemRecorder: recorded response headers: #{response_headers}" }
       Record.new(response_headers, response_body)
     else
-      Parrot::Log.debug {"FileSystemRecorder: header_file or body_file not avairable."}
+      Parrot::Log.debug { "FileSystemRecorder: header_file or body_file not avairable." }
       nil
     end
   end
