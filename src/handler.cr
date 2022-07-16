@@ -1,4 +1,4 @@
-module Parrot
+module Replay
   class RecordingHandler
     include HTTP::Handler
 
@@ -7,14 +7,14 @@ module Parrot
 
     def call(context)
       context.request.headers["Host"] = @config.base_uri_host
-      Parrot::Log.debug { "Recorder: sending client request : #{context.request}" }
+      Replay::Log.debug { "Recorder: sending client request : #{context.request}" }
       client_response = HTTP::Client.new(@config.base_uri).exec(context.request)
-      Parrot::Log.debug { "Recorder: recording client response : #{client_response}" }
+      Replay::Log.debug { "Recorder: recording client response : #{client_response}" }
       record_or_die = @config.recorder.record(
         Index.new(context.request),
         Record.new(client_response)
       )
-      Parrot::Log.debug { "Recorder: client response recorded as : #{record_or_die[0].index}" }
+      Replay::Log.debug { "Recorder: client response recorded as : #{record_or_die[0].index}" }
       context.response.headers.merge!(client_response.headers)
       context.response.puts client_response.body
     end
@@ -29,9 +29,9 @@ module Parrot
     def call(context)
       context.request.headers["Host"] = @config.base_uri_host
       requested_index = Index.new(context.request)
-      Parrot::Log.debug { "Repeater: request index : #{requested_index.index}" }
+      Replay::Log.debug { "Repeater: request index : #{requested_index.index}" }
       found = @config.recorder.find(requested_index)
-      Parrot::Log.debug { "Repeater: request index is #{(found) ? "found" : "not found"} for #{requested_index.index}" }
+      Replay::Log.debug { "Repeater: request index is #{(found) ? "found" : "not found"} for #{requested_index.index}" }
       if found
         # FIXME: fixed status code
         context.response.status_code = 200

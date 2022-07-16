@@ -1,4 +1,4 @@
-name: parrot
+name: replay
 version: 0.1.0
 
 authors:
@@ -6,13 +6,13 @@ authors:
 
 targets:
   parrot:
-    main: src/parrot.cr
+    main: src/replay.cr
 
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
     version: ~> 1.0.0
 
-crystal: 1.4.1
+crystal: 1.5.0
 
 license: MIT

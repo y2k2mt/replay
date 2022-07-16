@@ -1,1 +1,1 @@
-Parrot::Log = ::Log.for("parrot")
+Replay::Log = ::Log.for("replay")

@@ -5,10 +5,10 @@ mode = Config::Mode::Replay
 base_url : String? = nil
 
 parser = OptionParser.parse do |parser|
-  parser.banner = "Parrot: Record and Preplay!"
+  parser.banner = "Replay: Record and Preplay!"
 
   parser.on "-v", "--version", "Show version" do
-    puts Parrot::VERSION
+    puts Replay::VERSION
     exit
   end
 

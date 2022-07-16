@@ -7,17 +7,17 @@ class Server
     handlers = [] of HTTP::Handler
     case config.mode
     when Config::Mode::Replay
-      handlers << Parrot::RepeatingHandler.new(config)
+      handlers << Replay::RepeatingHandler.new(config)
     when Config::Mode::Record
-      handlers << Parrot::RecordingHandler.new(config)
+      handlers << Replay::RecordingHandler.new(config)
     end
     handlers
   end
 
   def start : Void
     address = @server.bind_tcp @config.port
-    Parrot::Log.info { "Listening on http://#{address}" }
-    Parrot::Log.info { "Running as #{@config.mode}ing mode for #{@config.base_uri}" }
+    Replay::Log.info { "Listening on http://#{address}" }
+    Replay::Log.info { "Running as #{@config.mode}ing mode for #{@config.base_uri}" }
     @server.listen
   end
 
