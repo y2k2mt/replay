@@ -4,15 +4,31 @@ Record & Replay proxy.
 
 ## Installation
 
-TODO: Write installation instructions here
+### From Sources
+
+```
+$ git clone https://github.com/y2k2mt/replay && cd replay
+$ crystal build src/replay.cr
+$ cp replay /usr/local/bin/
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+Recording.
+```
+$ replay -r http://your-awesome-web-api
+...
+$ curl localhost:8080/endpoint
+Hello
+```
 
-## Development
-
-TODO: Write development instructions here
+Replaying.
+```
+$ replay -R http://your-awesome-web-api
+...
+$ curl localhost:8080/endpoint
+Hello
+```
 
 ## Contributing
 
