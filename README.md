@@ -14,20 +14,20 @@ $ cp replay /usr/local/bin/
 
 ## Usage
 
-Recording.
+Recording mode.
 ```
 $ replay -r http://your-awesome-web-api
 ...
 $ curl localhost:8080/endpoint
-Hello
+Hello # Record and return the response from the real server.
 ```
 
-Replaying.
+Replaying mode.
 ```
 $ replay -R http://your-awesome-web-api
 ...
 $ curl localhost:8080/endpoint
-Hello
+Hello # Answering from 'replay' server.
 ```
 
 ## Contributing
