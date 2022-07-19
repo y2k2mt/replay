@@ -16,8 +16,9 @@ struct Index
       ctx << @path << @method
     end
     header_digest = Digest::SHA256.hexdigest do |ctx|
-      index_conditions["indexed"].each do |_, v|
-        case v
+      index_conditions_hash = index_conditions["indexed"]
+      index_conditions_hash.keys.sort.each do |k|
+        case v = index_conditions_hash[k]
         when String
           ctx << v
         when Array(String)
