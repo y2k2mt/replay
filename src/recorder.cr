@@ -40,7 +40,6 @@ class FileSystemRecorder
       Replay::Log.debug { "FileSystemRecorder: header_file path #{header_file}" }
       Replay::Log.debug { "FileSystemRecorder: body_file path #{body_file}" }
       response_headers = HTTP::Headers.new
-      # header_file_hash = Hash(String, Array(String)).from_json(JSON.parse(File.read(header_file)))
       header_file_hash = Hash(String, Array(String)).from_json(File.read(header_file))
       header_file_hash.map do |k, v|
         if k != "response_status"
