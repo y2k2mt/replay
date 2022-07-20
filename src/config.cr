@@ -22,6 +22,6 @@ class Config
     FileSystemRecorder.new(self)
   }
 
-  def initialize(@base_url : String, @port : Int16, @mode : Mode, @base_dir_path = "#{Path.home}/.parrot")
+  def initialize(@base_url : String, @port : Int16, @mode : Mode, @base_dir_path = "#{Path.home}/.replay-recorder")
   end
 end
