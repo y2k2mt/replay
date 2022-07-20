@@ -5,8 +5,11 @@ authors:
   - y2k2mt <y2.k2mt@gmail.com>
 
 targets:
-  parrot:
+  replay:
     main: src/replay.cr
+
+executables:
+  - replay
 
 development_dependencies:
   ameba:
