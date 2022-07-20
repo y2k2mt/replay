@@ -33,8 +33,7 @@ module Replay
       found = @config.recorder.find(requested_index)
       Replay::Log.debug { "Repeater: request index is #{(found) ? "found" : "not found"} for #{requested_index.index}" }
       if found
-        # FIXME: fixed status code
-        context.response.status_code = 200
+        context.response.status_code = found.response_status
         context.response.headers.merge!(found.headers)
         context.response.puts found.body
       else
