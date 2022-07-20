@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Parrot do
+describe Replay do
   # TODO: Write tests
 
   it "works" do

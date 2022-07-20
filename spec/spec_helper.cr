@@ -1,2 +1,2 @@
 require "spec"
-require "../src/parrot"
+require "../src/replay"
