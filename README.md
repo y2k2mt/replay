@@ -6,24 +6,23 @@ Record & Replay proxy.
 
 ### From Sources
 
-```
+```console
 $ git clone https://github.com/y2k2mt/replay && cd replay
-$ crystal build src/replay.cr
-$ cp replay /usr/local/bin/
+$ make clean && make install
 ```
 
 ## Usage
 
 Recording mode.
-```
+```console
 $ replay -r http://your-awesome-web-api
 ...
 $ curl localhost:8080/endpoint
-Hello # Record and return the response from the real server.
+Hello # Record and return a response from the real server.
 ```
 
 Replaying mode.
-```
+```console
 $ replay -R http://your-awesome-web-api
 ...
 $ curl localhost:8080/endpoint
