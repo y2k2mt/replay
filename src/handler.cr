@@ -11,7 +11,7 @@ module Replay
       client_response = HTTP::Client.new(@config.base_uri).exec(context.request)
       Replay::Log.debug { "Recorder: recording client response : #{client_response}" }
       record_or_die = @config.recorder.record(
-        Index.new(context.request),
+        Index.new(@config, context.request),
         Record.new(client_response)
       )
       Replay::Log.debug { "Recorder: client response recorded as : #{record_or_die[0].index}" }
@@ -28,7 +28,7 @@ module Replay
 
     def call(context)
       context.request.headers["Host"] = @config.base_uri_host
-      requested_index = Index.new(context.request)
+      requested_index = Index.new(@config, context.request)
       Replay::Log.debug { "Repeater: request index : #{requested_index.index}" }
       found = @config.recorder.find(requested_index)
       Replay::Log.debug { "Repeater: request index is #{(found) ? "found" : "not found"} for #{requested_index.index}" }

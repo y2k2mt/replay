@@ -1,19 +1,21 @@
 struct Index
+  @host_name : String
   @method : String
   @path : String
   @headers : HTTP::Headers
   @indexed_header_names : Array(String)
 
-  def initialize(request)
+  def initialize(config, request)
+    @host_name = config.base_uri_host
     @path = request.path
     @method = request.method
     @headers = request.headers
-    @indexed_header_names = ["Host"]
+    @indexed_header_names = [] of String
   end
 
   def index
     meta_digest = Digest::SHA256.hexdigest do |ctx|
-      ctx << @path << @method
+      ctx << @host_name << @path << @method
     end
     header_digest = Digest::SHA256.hexdigest do |ctx|
       index_conditions_hash = index_conditions["indexed"]
