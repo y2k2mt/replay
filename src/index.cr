@@ -2,7 +2,7 @@ struct Index
   @host_name : String
   @method : String
   @path : String
-  @headers : Hash(String,Array(String))
+  @headers : Hash(String, Array(String))
   @id : String
   @indexed_header_names : Array(String)
 
@@ -31,11 +31,11 @@ struct Index
       host_name = index["host"].to_s,
       path = index["path"].to_s,
       method = index["method"].to_s,
-      headers = index["indexed"].as_h.reduce({} of String => Array(String)) { |acc,(k,v)|
+      headers = index["indexed"].as_h.reduce({} of String => Array(String)) { |acc, (k, v)|
         acc[k] = v.as_a.map(&.to_s)
         acc
       },
-    id = index["id"].to_s
+      id = index["id"].to_s
     )
   end
 
@@ -55,11 +55,11 @@ struct Index
 
   def index_conditions
     {
-      "id" => @id,
-      "host" => @host_name,
-      "method" => @method,
-      "path" => @path,
-      "indexed" => {} of String => Array(String),
+      "id"          => @id,
+      "host"        => @host_name,
+      "method"      => @method,
+      "path"        => @path,
+      "indexed"     => {} of String => Array(String),
       "not_indexed" => @headers.to_h,
     }
   end

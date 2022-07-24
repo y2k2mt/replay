@@ -1,6 +1,7 @@
 module Recorder
   def record(record : Record) : Tuple(Index, Record)
   end
+
   def find(index : Index) : Record?
   end
 end
