@@ -4,7 +4,7 @@ def start_server(config : Config)
   server = Server.new(config)
 
   Signal::INT.trap do
-    Replay::Log.info { "Stopping parrot server." }
+    Replay::Log.info { "Stopping Replay server." }
     server.stop
     Replay::Log.info { "Replay server stopped." }
   end
