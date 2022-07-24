@@ -14,7 +14,7 @@ module Replay
         Index.new(@config, context.request),
         Record.new(client_response)
       )
-      Replay::Log.debug { "Recorder: client response recorded as : #{record_or_die[0].index}" }
+      Replay::Log.debug { "Recorder: client response recorded as : #{record_or_die[0].meta_index}" }
       context.response.headers.merge!(client_response.headers)
       context.response.puts client_response.body
     end
@@ -29,9 +29,9 @@ module Replay
     def call(context)
       context.request.headers["Host"] = @config.base_uri_host
       requested_index = Index.new(@config, context.request)
-      Replay::Log.debug { "Repeater: request index : #{requested_index.index}" }
+      Replay::Log.debug { "Repeater: request index : #{requested_index.meta_index}" }
       found = @config.recorder.find(requested_index)
-      Replay::Log.debug { "Repeater: request index is #{(found) ? "found" : "not found"} for #{requested_index.index}" }
+      Replay::Log.debug { "Repeater: request index is #{(found) ? "found" : "not found"} for #{requested_index.meta_index}" }
       if found
         context.response.status_code = found.response_status
         context.response.headers.merge!(found.headers)

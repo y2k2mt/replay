@@ -2,44 +2,65 @@ struct Index
   @host_name : String
   @method : String
   @path : String
-  @headers : HTTP::Headers
+  @headers : Hash(String,Array(String))
+  @id : String
   @indexed_header_names : Array(String)
 
   def initialize(config, request)
     @host_name = config.base_uri_host
     @path = request.path
     @method = request.method
-    @headers = request.headers
+    @headers = request.headers.to_h
+    @id = Random::Secure.hex
     @indexed_header_names = [] of String
   end
 
-  def index
-    meta_digest = Digest::SHA256.hexdigest do |ctx|
+  private def initialize(
+    @host_name,
+    @path,
+    @method,
+    @headers,
+    @id,
+    @indexed_header_names = [] of String
+  )
+  end
+
+  def self.from(index_content : String)
+    index = JSON.parse(index_content)
+    new(
+      host_name = index["host"].to_s,
+      path = index["path"].to_s,
+      method = index["method"].to_s,
+      headers = index["indexed"].as_h.reduce({} of String => Array(String)) { |acc,(k,v)|
+        acc[k] = v.as_a.map(&.to_s)
+        acc
+      },
+    id = index["id"].to_s
+    )
+  end
+
+  getter(meta_index : String) {
+    Digest::SHA256.hexdigest do |ctx|
       ctx << @host_name << @path << @method
     end
-    header_digest = Digest::SHA256.hexdigest do |ctx|
-      index_conditions_hash = index_conditions["indexed"]
-      index_conditions_hash.keys.sort.each do |k|
-        case v = index_conditions_hash[k]
-        when String
-          ctx << v
-        when Array(String)
-          v.each do |x|
-            ctx << x
-          end
-        end
-      end
-    end
-    # TODO: Add param_digest
-    # "#{meta_digest}_#{header_digest}_#{param_digest}"
-    "#{meta_digest}_#{header_digest}"
+  }
+
+  getter(id_index : String) {
+    "#{meta_index}_#{@id}"
+  }
+
+  def match?(index : Index) : Bool
+    index.meta_index == self.meta_index
   end
 
   def index_conditions
-    candidates = @headers.to_h.partition { |k, _| @indexed_header_names.includes?(k) }
     {
-      "indexed"     => candidates[0].to_h.merge({"path" => @path, "method" => @method}),
-      "not_indexed" => candidates[1].to_h,
+      "id" => @id,
+      "host" => @host_name,
+      "method" => @method,
+      "path" => @path,
+      "indexed" => {} of String => Array(String),
+      "not_indexed" => @headers.to_h,
     }
   end
 end
