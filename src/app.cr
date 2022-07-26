@@ -1,11 +1,11 @@
 require "./shards"
-require "./logger"
-require "./config"
-require "./record"
-require "./index"
-require "./recorder"
-require "./handler"
-require "./server"
+require "./replay/logger"
+require "./replay/config"
+require "./replay/record"
+require "./replay/index"
+require "./replay/recorder"
+require "./replay/handler"
+require "./replay/server"
 
 def start_server(config : Config)
   server = Server.new(config)

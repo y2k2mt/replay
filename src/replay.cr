@@ -1,4 +1,4 @@
-require "./app"
+require "./cli"
 
 # TODO: Write documentation for `Replay`
 module Replay
