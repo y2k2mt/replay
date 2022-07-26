@@ -1,4 +1,4 @@
-require "./option_parser"
+require "./app"
 
 # TODO: Write documentation for `Replay`
 module Replay

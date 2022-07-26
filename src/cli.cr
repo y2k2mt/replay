@@ -1,4 +1,4 @@
-require "./start_server"
+require "./app"
 
 server_port = 8080_i16
 mode = Config::Mode::Replay
