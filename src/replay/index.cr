@@ -6,7 +6,6 @@ struct Index
   @path : String
   @headers : Hash(String, Array(String))
   @params : Hash(String, String)
-  @indexed_header_names : Array(String)
 
   def initialize(config, request)
     @id = Random::Secure.hex
@@ -15,7 +14,6 @@ struct Index
     @method = request.method
     @headers = request.headers.to_h
     @params = request.query_params.to_h
-    @indexed_header_names = [] of String
   end
 
   private def initialize(
@@ -24,8 +22,7 @@ struct Index
     @path,
     @method,
     @headers,
-    @params,
-    @indexed_header_names = [] of String
+    @params
   )
   end
 
