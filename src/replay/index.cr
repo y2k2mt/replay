@@ -30,6 +30,7 @@ struct Index
   end
 
   def self.from(index_content : String)
+    Replay::Log.debug { "Loading index content : #{index_content}." }
     index = JSON.parse(index_content)
     new(
       id = index["id"].to_s,
@@ -58,9 +59,10 @@ struct Index
   }
 
   def match?(index : Index) : Bool
+    Replay::Log.debug { "Comparing : #{self.meta_index} and #{index.meta_index}." }
     index.meta_index == @meta_index &&
-      @headers.find { |k, v| !index.headers[k] || index.headers[k] != v } == nil &&
-      @params.find { |k, v| !index.params[k] || index.params[k] != v } == nil
+      (@headers.empty? || @headers.find { |k, v| !index.headers[k] || index.headers[k] != v } == nil) &&
+      (@params.empty? || @params.find { |k, v| !index.params[k] || index.params[k] != v } == nil)
   end
 
   def conditions
