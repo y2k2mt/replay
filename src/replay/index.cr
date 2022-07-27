@@ -53,7 +53,7 @@ struct Index
     index.meta_index == self.meta_index
   end
 
-  def index_conditions
+  def conditions
     {
       "id"          => @id,
       "host"        => @host_name,

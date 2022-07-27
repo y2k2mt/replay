@@ -20,7 +20,7 @@ class FileSystemRecorder
       Dir.mkdir_p(@index_file_dir)
     end
     File.open("#{@index_file_dir}/#{index_hash}", "w+")
-    File.write("#{@index_file_dir}/#{index_hash}", index.index_conditions.to_pretty_json)
+    File.write("#{@index_file_dir}/#{index_hash}", index.conditions.to_pretty_json)
 
     if (!File.directory?(@reply_file_dir))
       Dir.mkdir_p(@reply_file_dir)
