@@ -17,6 +17,7 @@ module Replay
       Replay::Log.debug { "Recorder: client response recorded as : #{record_or_die[0].meta_index}" }
       context.response.headers.merge!(client_response.headers)
       context.response.puts client_response.body
+      context.response.flush
     end
   end
 
@@ -36,6 +37,7 @@ module Replay
         context.response.status_code = found.response_status
         context.response.headers.merge!(found.headers)
         context.response.puts found.body
+        context.response.flush
       else
         context.response.status_code = 404
         context.response.puts "Not recorded yet!"
