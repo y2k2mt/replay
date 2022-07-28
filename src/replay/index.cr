@@ -5,6 +5,7 @@ struct Index
   @method : String
   @path : String
   @headers : Hash(String, Array(String))
+  @body : String
   @params : Hash(String, String)
 
   def initialize(config, request)
@@ -13,6 +14,7 @@ struct Index
     @path = request.path
     @method = request.method
     @headers = request.headers.to_h
+    @body = request.body.try &.gets_to_end || ""
     @params = request.query_params.to_h
   end
 
@@ -22,6 +24,7 @@ struct Index
     @path,
     @method,
     @headers,
+    @body,
     @params
   )
   end
@@ -38,6 +41,7 @@ struct Index
         acc[k] = v.as_a.map(&.to_s)
         acc
       },
+      body = index["indexed"]["body"].as_s,
       params = index["indexed"]["params"].as_h.reduce({} of String => String) { |acc, (k, v)|
         acc[k] = v.as_s
         acc
@@ -71,10 +75,12 @@ struct Index
       "indexed" => {
         "headers" => {} of String => Array(String),
         "params"  => {} of String => String,
+        "body"    => "",
       },
       "not_indexed" => {
         "headers" => @headers,
         "params"  => @params,
+        "body"    => @body,
       },
     }
   end
