@@ -8,7 +8,17 @@ module Replay
     def call(context)
       context.request.headers["Host"] = @config.base_uri_host
       Replay::Log.debug { "Recorder: sending client request : #{context.request}" }
+      if body = context.request.body
+        body_io = IO::Memory.new
+        bytes_read = IO.copy(body, body_io, limit: 1_048_576)
+        body_io.rewind
+        context.request.body = body_io
+      end
       client_response = HTTP::Client.new(@config.base_uri).exec(context.request)
+      if body_io
+        body_io.rewind
+        context.request.body = body_io
+      end
       Replay::Log.debug { "Recorder: recording client response : #{client_response}" }
       record_or_die = @config.recorder.record(
         Index.new(@config, context.request),
