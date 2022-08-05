@@ -15,15 +15,15 @@ $ make clean && make install
 
 Recording mode.
 ```console
-$ replay -r http://your-awesome-web-api
+$ replay -r http://your-awesome-api
 ...
 $ curl localhost:8080/endpoint
-Hello # Record and return a response from the real server.
+Hello # Record and return a response from the real server.(http://your-awesome-api/endpoint)
 ```
 
 Replaying mode.
 ```console
-$ replay -R http://your-awesome-web-api
+$ replay -R http://your-awesome-api
 ...
 $ curl localhost:8080/endpoint
 Hello # Answering from 'replay' server.
