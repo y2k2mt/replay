@@ -1,5 +1,5 @@
 struct Index
-  getter id, host_name, method, path, headers, params
+  getter id, host_name, method, path, headers, params, body
   @id : String
   @host_name : String
   @method : String
@@ -63,7 +63,8 @@ struct Index
     Replay::Log.debug { "Comparing : #{self.meta_index} and #{index.meta_index}." }
     index.meta_index == self.meta_index &&
       (self.headers.empty? || self.headers.find { |k, v| !index.headers[k] || index.headers[k] != v } == nil) &&
-      (self.params.empty? || self.params.find { |k, v| !index.params[k] || index.params[k] != v } == nil)
+      (self.params.empty? || self.params.find { |k, v| !index.params[k] || index.params[k] != v } == nil) &&
+      (self.body.empty? || self.body == index.body)
   end
 
   def conditions
