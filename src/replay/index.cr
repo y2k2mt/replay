@@ -61,9 +61,9 @@ struct Index
 
   def match?(index : Index) : Bool
     Replay::Log.debug { "Comparing : #{self.meta_index} and #{index.meta_index}." }
-    index.meta_index == @meta_index &&
-      (@headers.empty? || @headers.find { |k, v| !index.headers[k] || index.headers[k] != v } == nil) &&
-      (@params.empty? || @params.find { |k, v| !index.params[k] || index.params[k] != v } == nil)
+    index.meta_index == self.meta_index &&
+      (self.headers.empty? || self.headers.find { |k, v| !index.headers[k] || index.headers[k] != v } == nil) &&
+      (self.params.empty? || self.params.find { |k, v| !index.params[k] || index.params[k] != v } == nil)
   end
 
   def conditions
