@@ -1,2 +1,3 @@
 require "spec"
-require "../src/replay"
+require "webmock"
+require "../src/app"
