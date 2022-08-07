@@ -1,6 +1,6 @@
 require "./app"
 
-server_port = 8080_i16
+server_port = 8899_i16
 mode = Config::Mode::Replay
 base_url : String? = nil
 
