@@ -29,8 +29,9 @@ describe Replay::RecordingHandler do
     actual_response_dir = Dir.new("#{temp_dir_path}/replies/").each_child
     actual_response_file = actual_response_dir.next
     actual_response_header_file = actual_response_dir.next
+    actual_request_header = File.new("#{temp_dir_path}/indexes/#{actual_header_file.to_s}").gets_to_end
     actual_response_body = File.new("#{temp_dir_path}/replies/#{actual_response_file.to_s}").gets_to_end
-    actual_response_body.should eq("hello!")
+    JSON.parse(actual_request_header)["host"].as_s.should eq("www.example.com")
     FileUtils.rm_rf(temp_dir_path)
   end
 end
