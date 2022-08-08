@@ -13,21 +13,29 @@ $ make clean && make install
 
 ## Usage
 
-Recording mode.
+Recording
+
 ```console
 $ replay -r http://your-awesome-api
 ...
-$ curl localhost:8080/endpoint
+$ curl localhost:8899/endpoint
 Hello # Record and return a response from the real server.(http://your-awesome-api/endpoint)
 ```
 
-Replaying mode.
+Replaying(Work as a mock server)
+
 ```console
 $ replay -R http://your-awesome-api
 ...
-$ curl localhost:8080/endpoint
+$ curl localhost:8899/endpoint
 Hello # Answering from 'replay' server.
 ```
+
+## RoadMap
+
+- More flexible condition matching
+- Condition editor UI
+- Support more protocol (e.g redis)
 
 ## Contributing
 
