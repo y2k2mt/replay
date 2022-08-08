@@ -33,9 +33,10 @@ Hello # Answering from 'replay' server.
 
 ## RoadMap
 
+- Ideomatic refactor
 - More flexible condition matching
+- Support more protocol (Implements by pure TCP API)
 - Condition editor UI
-- Support more protocol (e.g redis)
 
 ## Contributing
 
