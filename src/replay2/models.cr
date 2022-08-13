@@ -1,24 +1,27 @@
-module Request
-  def to_index : Index
-  end
+enum Protocol
+  TCP
+  HTTP
 end
 
-enum Protocol
-  HTTP
+module HasProtocol
+  def protocol : Protocol
+  end
 end
 
 struct RequestError
 end
 
-module Requests
-  def from(io : IO) : RequestError | Request
-    RequestError.new
+module Indexes
+  include HasProtocol
+
+  def from(io : IO) : RequestError | Index
   end
 end
 
 module Index
   def base_index : String
   end
+
   def ==(other : Request) : Bool
   end
 end
@@ -32,35 +35,35 @@ struct ProxyError
 end
 
 module Datastore
-  def persist(index : Index,record : Record) : Void
+  def persist(index : Index, record : Record) : Void
   end
+
   def find(index : Index) : Record?
   end
 end
 
 module Records
-  def proxy(index : Index) ProxyError | Record
-  end
-  def find(index : Index) : Record?
-    datastore.find(index)
-  end
-  protected def datastore : Datastore
+  include HasProtocol
+
+  def proxy(index : Index)
+    ProxyError | Record
   end
 end
 
 struct Context
-  getter records : Records,requests : Requests,protocol : Protocol
-  def initialize(@records : Records,@requests : Requests,@protocol : Protocol)
+  getter records : Records, indexes : Indexes
+
+  def initialize(@records : Records, @indexes : Indexes)
   end
 end
 
 module Recorder
-  def self.record(io : IO,context : Context) : RequestError | ProxyError | Record
-    case maybe_request = context.requests.from(io)
+  def self.record(io : IO, context : Context) : RequestError | ProxyError | Record
+    case maybe_index = context.indexes.from(io)
     when RequestError
-      maybe_request
+      maybe_index
     when Request
-      context.records.proxy(maybe_request.to_index)
+      context.records.proxy(maybe_index)
     end
   end
 end

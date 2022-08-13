@@ -15,7 +15,7 @@ class Server
     when Record
       record.response(io)
     else
-      #response err
+      # response err
     end
   end
 
