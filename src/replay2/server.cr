@@ -10,7 +10,7 @@ class Server
   end
 
   def handle_client(io)
-    maybe_record = Recorder.record(io)
+    maybe_record = Recorder.record(io,HTTPRequests.new(@config))
     case maybe_record
     when Record
       record.response(io)

@@ -1,19 +1,33 @@
-class HTTPIndexes
-  include Indexes
+class HTTPRequests
+  include Requests
 
   def initialize(@config : Config)
   end
 
-  def from(io : IO) : RequestError | Index
-    http_request = HTTP::Request.from_io(io)
-    HTTPRequest.new(http_request, conig)
+  def from(io : IO) : RequestError | Request
+    maybe_http_request = HTTP::Request.from_io(io)
+    case maybe_http_request
+    when HTTP::Request
+      HTTPRequest.new(maybe_http_request, @config)
+    else
+      RequestError.new
+    end
   end
 end
 
-class HTTPIndex
-  include Indexes
+class HTTPRequest
+  include Request
 
-  def initialize(http_request, config)
+  @id : String
+  @host_name : String
+  @method : String
+  @path : String
+  @headers : Hash(String, Array(String))
+  @body : String
+  @params : Hash(String, String)
+
+
+  def initialize(@http_request : HTTP::Request, @config : Config)
     @id = Random::Secure.hex
     @host_name = config.base_uri_host
     @path = http_request.path
@@ -36,28 +50,43 @@ class HTTPIndex
       (self.params.empty? || self.params.find { |k, v| !index.params[k] || index.params[k] != v } == nil) &&
       (self.body.empty? || self.body == index.body)
   end
+
+  def proxy() ProxyError | Record
+    client_response = HTTP::Client.new(@config.base_uri).exec(@http_request)
+    HTTPRecord.new(client_response)
+  end
 end
 
-module Record
+class HTTPRecord
+  include Record
+  def initialize(@client_response : HTTP::Client::Response)
+    @headers = @client_response.headers
+    @body = @client_response.body
+    @response_status = @client_response.status_code
+  end
   def response(io : IO)
+    @client_response.to_io(io)
   end
 end
 
 module Datastore
-  def persist(index : Index, record : Record) : Void
+  def persist(request : Request, record : Record) : Void
+    #TODO:impl
   end
 
-  def find(index : Index) : Record?
+  def find(request : Request) : Record?
+    #TODO:impl
+    nil
   end
 end
 
-class RecordsImpl
-  include Records
-
-  def initialize(@datastore : Datastore)
-  end
-
-  def proxy(index : Index)
-    ProxyError | Record
+module Recorder
+  def self.record(io : IO, requests : Requests) : RequestError | ProxyError | Record
+    case maybe_request = requests.from(io)
+    when RequestError
+      maybe_request
+    when Request
+      maybe_request.proxy
+    end
   end
 end
