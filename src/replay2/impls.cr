@@ -52,8 +52,9 @@ class HTTPRequest
   end
 
   def proxy() ProxyError | Record
+    @http_request.headers["Host"] = @host_name
     client_response = HTTP::Client.new(@config.base_uri).exec(@http_request)
-    HTTPRecord.new(client_response)
+    HTTPRecord.new(client_response) || ProxyError.new
   end
 end
 
@@ -87,6 +88,8 @@ module Recorder
       maybe_request
     when Request
       maybe_request.proxy
+    else
+      ProxyError.new
     end
   end
 end

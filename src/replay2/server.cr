@@ -13,8 +13,9 @@ class Server
     maybe_record = Recorder.record(io,HTTPRequests.new(@config))
     case maybe_record
     when Record
-      record.response(io)
+      maybe_record.response(io)
     else
+      pp maybe_record
       # response err
     end
   end
