@@ -1,20 +1,3 @@
-class HTTPRequests
-  include Requests
-
-  def initialize(@config : Config)
-  end
-
-  def from(io : IO) : RequestError | Request
-    maybe_http_request = HTTP::Request.from_io(io)
-    case maybe_http_request
-    when HTTP::Request
-      HTTPRequest.new(maybe_http_request, @config)
-    else
-      RequestError.new
-    end
-  end
-end
-
 class HTTPRequest
   include Request
 
@@ -78,50 +61,5 @@ class HTTPRequest
         end
       end
     end)
-  end
-end
-
-class HTTPRecord
-  include Record
-
-  def initialize(@client_response : HTTP::Client::Response)
-    @headers = @client_response.headers
-    @body = @client_response.body
-    @response_status = @client_response.status_code
-  end
-
-  def response(io : IO)
-    @client_response.to_io(io)
-  end
-
-  def metadatas : JSON::Any
-    JSON.parse(JSON.build do |json|
-      json.object do
-        json.field "headers", @headers
-        json.field "status", @response_status
-      end
-    end)
-  end
-
-  def entity : String
-    @body
-  end
-end
-
-module Recorder
-  def self.record(io : IO, requests : Requests, datasource : Datasource) : RequestError | ProxyError | Record?
-    case maybe_request = requests.from(io)
-    when RequestError
-      maybe_request
-    when Request
-      case maybe_record = maybe_request.proxy
-      when Record
-        datasource.persist(maybe_request,maybe_record)
-      when ProxyError
-        maybe_record
-      end
-    else
-      ProxyError.new
-    end
   end
 end
