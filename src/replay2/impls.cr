@@ -72,7 +72,8 @@ class HTTPRecord
   end
 end
 
-module Datastore
+module Datasource
+  #TODO: Void?
   def persist(request : Request, record : Record) : Void
     # TODO:impl
   end

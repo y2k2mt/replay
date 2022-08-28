@@ -3,6 +3,7 @@ require "./replay/logger"
 require "./replay2/config"
 require "./replay2/models"
 require "./replay2/impls"
+require "./replay2/errors"
 require "./replay2/server"
 
 # require "./replay/record"

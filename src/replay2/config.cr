@@ -18,8 +18,17 @@ class Config
     end || raise "Invalid configuration [base_url] : #{@base_url}"
   }
 
-  getter(recorder : Recorder) {
-    FileSystemRecorder.new(self)
+  getter(datasource : Datasource) {
+    FileSystemDatasource.new(self)
+  }
+
+  getter(requests : Requests | UnsupportedProtocolError) {
+    case scheme = base_uri.scheme
+    when "http" || "https"
+      HTTPRequests.new(self)
+    else
+      UnsupportedProtocolError.new(scheme)
+    end
   }
 
   def initialize(@base_url : String, @port : Int16, @mode : Mode, @base_dir_path = "#{Path.home}/.replay-recorder")

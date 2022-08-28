@@ -1,8 +1,4 @@
-struct RequestError
-end
-
 module Requests
-
   def from(io : IO) : RequestError | Request
   end
 end
@@ -24,10 +20,7 @@ module Record
   end
 end
 
-struct ProxyError
-end
-
-module Datastore
+module Datasource
   def persist(request : Request, record : Record) : Void
   end
 

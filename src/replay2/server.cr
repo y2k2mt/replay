@@ -12,13 +12,18 @@ class Server
   end
 
   def handle_client(io)
-    maybe_record = Recorder.record(io, HTTPRequests.new(@config))
-    case maybe_record
-    when Record
-      maybe_record.response(io)
-    else
-      pp maybe_record
+    case maybe_requests = @config.requests
+    when Requests
+      case maybe_record = Recorder.record(io, maybe_requests)
+      when Record
+        maybe_record.response(io)
+      else
+        pp maybe_record
+        # TODO: response err
+      end
+    when UnsupportedProtocolError
       # TODO: response err
+      pp maybe_requests
     end
   end
 
