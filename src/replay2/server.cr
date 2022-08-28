@@ -4,6 +4,8 @@ class Server
   end
 
   def start : Void
+    Replay::Log.info { "Listening on 0.0.0.0:#{@config.port}" }
+    Replay::Log.info { "Running as #{@config.mode}ing mode for #{@config.base_uri}" }
     while client = @server.accept?
       spawn handle_client(client)
     end

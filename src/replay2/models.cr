@@ -1,18 +1,7 @@
-enum Protocol
-  TCP
-  HTTP
-end
-
-module HasProtocol
-  def protocol : Protocol
-  end
-end
-
 struct RequestError
 end
 
 module Requests
-  include HasProtocol
 
   def from(io : IO) : RequestError | Request
   end
