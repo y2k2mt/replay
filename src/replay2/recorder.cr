@@ -6,7 +6,7 @@ module Recorder
     when Request
       case maybe_record = maybe_request.proxy
       when Record
-        datasource.persist(maybe_request,maybe_record)
+        datasource.persist(maybe_request, maybe_record)
       when ProxyError
         maybe_record
       end

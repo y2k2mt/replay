@@ -1,7 +1,7 @@
 class HTTPRequest
   include Request
 
-  getter host_name,path,method,body,params
+  getter host_name, path, method, body, params
 
   @id : String
   @host_name : String
