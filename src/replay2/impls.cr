@@ -26,7 +26,6 @@ class HTTPRequest
   @body : String
   @params : Hash(String, String)
 
-
   def initialize(@http_request : HTTP::Request, @config : Config)
     @id = Random::Secure.hex
     @host_name = config.base_uri_host
@@ -51,7 +50,8 @@ class HTTPRequest
       (self.body.empty? || self.body == index.body)
   end
 
-  def proxy() ProxyError | Record
+  def proxy
+    ProxyError | Record
     @http_request.headers["Host"] = @host_name
     client_response = HTTP::Client.new(@config.base_uri).exec(@http_request)
     HTTPRecord.new(client_response) || ProxyError.new
@@ -60,11 +60,13 @@ end
 
 class HTTPRecord
   include Record
+
   def initialize(@client_response : HTTP::Client::Response)
     @headers = @client_response.headers
     @body = @client_response.body
     @response_status = @client_response.status_code
   end
+
   def response(io : IO)
     @client_response.to_io(io)
   end
@@ -72,11 +74,11 @@ end
 
 module Datastore
   def persist(request : Request, record : Record) : Void
-    #TODO:impl
+    # TODO:impl
   end
 
   def find(request : Request) : Record?
-    #TODO:impl
+    # TODO:impl
     nil
   end
 end

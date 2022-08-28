@@ -1,6 +1,6 @@
 class Server
   def initialize(@config : Config)
-    @server = TCPServer.new("localhost", 8899)
+    @server = TCPServer.new("0.0.0.0", @config.port)
   end
 
   def start : Void
@@ -10,13 +10,13 @@ class Server
   end
 
   def handle_client(io)
-    maybe_record = Recorder.record(io,HTTPRequests.new(@config))
+    maybe_record = Recorder.record(io, HTTPRequests.new(@config))
     case maybe_record
     when Record
       maybe_record.response(io)
     else
       pp maybe_record
-      # response err
+      # TODO: response err
     end
   end
 

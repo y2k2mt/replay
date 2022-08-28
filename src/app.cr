@@ -1,6 +1,6 @@
 require "./shards"
 require "./replay/logger"
-require "./replay/config"
+require "./replay2/config"
 require "./replay2/models"
 require "./replay2/impls"
 require "./replay2/server"

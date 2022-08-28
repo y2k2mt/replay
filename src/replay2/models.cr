@@ -25,7 +25,8 @@ module Request
   def ==(other : Request) : Bool
   end
 
-  def proxy() ProxyError | Record
+  def proxy
+    ProxyError | Record
   end
 end
 
