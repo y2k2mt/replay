@@ -1,5 +1,3 @@
-require "../models"
-
 class FileSystemDatasource
   include Datasource
 
@@ -8,7 +6,7 @@ class FileSystemDatasource
     @reply_file_dir = "#{@config.base_dir_path}/replies"
   end
 
-  def persist(request : Request, record : Record) : Void
+  def persist(request : Request, record : Record) : Record
     index_hash = request.base_index
     if (!File.directory?(@index_file_dir))
       Dir.mkdir_p(@index_file_dir)
@@ -26,6 +24,7 @@ class FileSystemDatasource
     File.write("#{@reply_file_dir}/#{index_hash}_headers", record_headers_hash.to_json)
     File.open("#{@reply_file_dir}/#{index_hash}", "w+")
     File.write("#{@reply_file_dir}/#{index_hash}", record.body)
+    record
   end
 
   def find(request : Request) : Record?

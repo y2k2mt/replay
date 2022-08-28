@@ -14,16 +14,19 @@ class Server
   def handle_client(io)
     case maybe_requests = @config.requests
     when Requests
-      case maybe_record = Recorder.record(io, maybe_requests)
+      case maybe_record = Recorder.record(io, maybe_requests, @config.datasource)
       when Record
         maybe_record.response(io)
-      else
-        pp maybe_record
+      when RequestError
         # TODO: response err
+        Replay::Log.error { "Invalid request: #{maybe_record}" }
+      when ProxyError
+        # TODO: response err
+        Replay::Log.error { "Error caused when proxing request: #{maybe_record}" }
       end
     when UnsupportedProtocolError
       # TODO: response err
-      pp maybe_requests
+      Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }
     end
   end
 
