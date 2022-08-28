@@ -12,23 +12,21 @@ class FileSystemDatasource
       Dir.mkdir_p(@index_file_dir)
     end
     File.open("#{@index_file_dir}/#{index_hash}", "w+")
-    File.write("#{@index_file_dir}/#{index_hash}", request.conditions.to_pretty_json)
+    File.write("#{@index_file_dir}/#{index_hash}", request.metadatas.to_pretty_json)
 
     if (!File.directory?(@reply_file_dir))
       Dir.mkdir_p(@reply_file_dir)
     end
 
-    record_headers_hash = record.headers.to_h
-    record_headers_hash["response_status"] = [record.response_status.to_s]
     File.open("#{@reply_file_dir}/#{index_hash}_headers", "w+")
-    File.write("#{@reply_file_dir}/#{index_hash}_headers", record_headers_hash.to_json)
+    File.write("#{@reply_file_dir}/#{index_hash}_headers", record.metadatas.to_json)
     File.open("#{@reply_file_dir}/#{index_hash}", "w+")
-    File.write("#{@reply_file_dir}/#{index_hash}", record.body)
+    File.write("#{@reply_file_dir}/#{index_hash}", record.entity)
     record
   end
 
   def find(request : Request) : Record?
-    meta_index = request.meta_index
+    meta_index = request.base_index
     index_files = Dir["#{@index_file_dir}/#{meta_index}_*"]
     if index_files.empty?
       Replay::Log.debug { "No index_file avairable." }
@@ -40,8 +38,8 @@ class FileSystemDatasource
       end
       found_index_file.try do |found|
         found_index = Index.from(File.read(found))
-        body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
-        header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
+        body_file = Dir["#{@reply_file_dir}/#{found_index.base_index}"].first?
+        header_file = Dir["#{@reply_file_dir}/#{found_index.base_index}_headers"].first?
         if (header_file && body_file)
           Replay::Log.debug { "Found header_file path: #{header_file}" }
           Replay::Log.debug { "Found body_file path: #{body_file}" }

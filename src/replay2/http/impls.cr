@@ -18,7 +18,7 @@ end
 class HTTPRequest
   include Request
 
-  getter host_name,path,method
+  getter host_name,path,method,body,params
 
   @id : String
   @host_name : String
@@ -40,7 +40,7 @@ class HTTPRequest
 
   def base_index : String
     Digest::SHA256.hexdigest do |ctx|
-      ctx << self.host_name << self.path << self.method
+      ctx << @host_name << @path << @method
     end
   end
 
@@ -58,6 +58,27 @@ class HTTPRequest
     client_response = HTTP::Client.new(@config.base_uri).exec(@http_request)
     HTTPRecord.new(client_response) || ProxyError.new
   end
+
+  def metadatas : JSON::Any
+    JSON.parse(JSON.build do |json|
+      json.object do
+        json.field "id", @id
+        json.field "host", @host_name
+        json.field "method", @method
+        json.field "path", @path
+        json.field "indexed" do
+          json.field "headers", {} of String => Array(String)
+          json.field "params", {} of String => String
+          json.field "body", ""
+        end
+        json.field "not_indexed" do
+          json.field "headers", @headers
+          json.field "params", @params
+          json.field "body", @body
+        end
+      end
+    end)
+  end
 end
 
 class HTTPRecord
@@ -72,10 +93,23 @@ class HTTPRecord
   def response(io : IO)
     @client_response.to_io(io)
   end
+
+  def metadatas : JSON::Any
+    JSON.parse(JSON.build do |json|
+      json.object do
+        json.field "headers", @headers
+        json.field "status", @response_status
+      end
+    end)
+  end
+
+  def entity : String
+    @body
+  end
 end
 
 module Recorder
-  def self.record(io : IO, requests : Requests, datasource : Datasource) : RequestError | ProxyError | Record
+  def self.record(io : IO, requests : Requests, datasource : Datasource) : RequestError | ProxyError | Record?
     case maybe_request = requests.from(io)
     when RequestError
       maybe_request

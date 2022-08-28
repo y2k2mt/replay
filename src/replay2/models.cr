@@ -13,10 +13,17 @@ module Request
   def proxy
     ProxyError | Record
   end
+
+  def metadatas : JSON::Any
+  end
 end
 
 module Record
   def response(io : IO)
+  end
+  def metadatas : JSON::Any
+  end
+  def entity : String
   end
 end
 
