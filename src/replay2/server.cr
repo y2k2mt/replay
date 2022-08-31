@@ -41,6 +41,22 @@ class Server
   end
 
   def handle_replay(io)
+    case maybe_requests = @config.requests
+    when Requests
+      case maybe_request = maybe_requests.from(io)
+      when Request
+        Replay::Log.debug { "Repeater: request index : #{maybe_request.base_index}" }
+        @config.datasource.find(maybe_request,maybe_requests).try do |record|
+          record.response(io)
+        end
+      when RequestError
+        #TODO: response error
+        Replay::Log.error { "Error caused when replaying request: #{maybe_request}" }
+      end
+    when UnsupportedProtocolError
+      # TODO: response err
+      Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }
+    end
   end
 
   def stop : Void

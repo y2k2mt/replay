@@ -7,6 +7,12 @@ class HTTPRecord
     @response_status = @client_response.status_code
   end
 
+  def initialize(headers : JSON::Any,body_content : IO)
+    @headers = @client_response.headers
+    @body = @client_response.body
+    @response_status = @client_response.status_code
+  end
+
   def response(io : IO)
     @client_response.to_io(io)
   end

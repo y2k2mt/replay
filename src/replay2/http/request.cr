@@ -1,7 +1,7 @@
 class HTTPRequest
   include Request
 
-  getter host_name, path, method, body, params
+  getter host_name, path, method, body, params, headers
 
   @id : String
   @host_name : String
@@ -12,6 +12,7 @@ class HTTPRequest
   @params : Hash(String, String)
 
   def initialize(@http_request : HTTP::Request, @config : Config)
+    http_request.headers["Host"] = @config.base_uri_host
     @id = Random::Secure.hex
     @host_name = config.base_uri_host
     @path = @http_request.path
@@ -31,6 +32,19 @@ class HTTPRequest
     @params = http_request.query_params.to_h
   end
 
+  def initialize(
+    @id,
+    @host_name,
+    @path,
+    @method,
+    @headers,
+    @body,
+    @params,
+    @http_request = HTTP::Request.new("",""),
+    @config = Config.empty
+  )
+  end
+
   def base_index : String
     Digest::SHA256.hexdigest do |ctx|
       ctx << @host_name << @path << @method
@@ -38,11 +52,11 @@ class HTTPRequest
   end
 
   def ==(other : Request) : Bool
-    Replay::Log.debug { "Comparing : #{self.base_index} and #{index.base_index}." }
-    index.base_index == self.base_index &&
-      (self.headers.empty? || self.headers.find { |k, v| !index.headers[k] || index.headers[k] != v } == nil) &&
-      (self.params.empty? || self.params.find { |k, v| !index.params[k] || index.params[k] != v } == nil) &&
-      (self.body.empty? || self.body == index.body)
+    Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
+    other.base_index == self.base_index &&
+      (self.headers.empty? || self.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
+      (self.params.empty? || self.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil) &&
+      (self.body.empty? || self.body == other.body)
   end
 
   def proxy

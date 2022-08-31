@@ -35,4 +35,8 @@ class Config
 
   def initialize(@base_url : String, @port : Int16, @mode : Mode, @base_dir_path = "#{Path.home}/.replay-recorder")
   end
+
+  def self.empty
+    Config.new("",0,Mode::Replay)
+  end
 end

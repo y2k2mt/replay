@@ -25,7 +25,7 @@ class FileSystemDatasource
     record
   end
 
-  def find(request : Request) : Record?
+  def find(request : Request, requests : Requests) : Record?
     meta_index = request.base_index
     index_files = Dir["#{@index_file_dir}/#{meta_index}_*"]
     if index_files.empty?
@@ -33,11 +33,11 @@ class FileSystemDatasource
       nil
     else
       found_index_file = index_files.find do |index_file|
-        candidate = Requests.from(File.read(index_file))
+        candidate = requests.from(JSON.parse(File.read(index_file)))
         candidate == request
       end
       found_index_file.try do |found|
-        found_index = Index.from(File.read(found))
+        found_index = requests.from(JSON.parse(File.read(found)))
         body_file = Dir["#{@reply_file_dir}/#{found_index.base_index}"].first?
         header_file = Dir["#{@reply_file_dir}/#{found_index.base_index}_headers"].first?
         if (header_file && body_file)
