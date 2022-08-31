@@ -24,7 +24,9 @@ class Config
 
   getter(requests : Requests | UnsupportedProtocolError) {
     case scheme = base_uri.scheme
-    when "http" || "https"
+    when "http"
+      HTTPRequests.new(self)
+    when "https"
       HTTPRequests.new(self)
     else
       UnsupportedProtocolError.new(scheme)
