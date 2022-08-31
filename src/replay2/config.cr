@@ -37,6 +37,6 @@ class Config
   end
 
   def self.empty
-    Config.new("",0,Mode::Replay)
+    Config.new("", 0, Mode::Replay)
   end
 end

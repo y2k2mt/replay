@@ -40,7 +40,7 @@ class HTTPRequest
     @headers,
     @body,
     @params,
-    @http_request = HTTP::Request.new("",""),
+    @http_request = HTTP::Request.new("", ""),
     @config = Config.empty
   )
   end
