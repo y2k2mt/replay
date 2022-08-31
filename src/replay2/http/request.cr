@@ -14,10 +14,20 @@ class HTTPRequest
   def initialize(@http_request : HTTP::Request, @config : Config)
     @id = Random::Secure.hex
     @host_name = config.base_uri_host
-    @path = http_request.path
-    @method = http_request.method
-    @headers = http_request.headers.to_h
+    @path = @http_request.path
+    @method = @http_request.method
+    @headers = @http_request.headers.to_h
+    if body = @http_request.body
+      body_io = IO::Memory.new
+      bytes_read = IO.copy(body, body_io, limit: 1_048_576)
+      body_io.rewind
+      @http_request.body = body_io
+    end
     @body = http_request.body.try &.gets_to_end || ""
+    if body_io
+      body_io.rewind
+      @http_request.body = body_io
+    end
     @params = http_request.query_params.to_h
   end
 
@@ -50,14 +60,18 @@ class HTTPRequest
         json.field "method", @method
         json.field "path", @path
         json.field "indexed" do
-          json.field "headers", {} of String => Array(String)
-          json.field "params", {} of String => String
-          json.field "body", ""
+          json.object do
+            json.field "headers", {} of String => Array(String)
+            json.field "params", {} of String => String
+            json.field "body", ""
+          end
         end
         json.field "not_indexed" do
-          json.field "headers", @headers
-          json.field "params", @params
-          json.field "body", @body
+          json.object do
+            json.field "headers", @headers
+            json.field "params", @params
+            json.field "body", @body
+          end
         end
       end
     end)
