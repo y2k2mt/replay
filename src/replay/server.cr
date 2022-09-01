@@ -29,10 +29,10 @@ class Server
         maybe_record.response(io)
       when RequestError
         Replay::Log.error { "Invalid request: #{maybe_record}" }
-        maybe_requests.response_error(io,maybe_record)
+        maybe_requests.response_error(io, maybe_record)
       when ProxyError
         Replay::Log.error { "Error caused when proxing request: #{maybe_record}" }
-        maybe_requests.response_error(io,maybe_record)
+        maybe_requests.response_error(io, maybe_record)
       end
     when UnsupportedProtocolError
       Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }
@@ -46,7 +46,7 @@ class Server
       case maybe_request = maybe_requests.from(io)
       when Request
         Replay::Log.debug { "Repeater: request index : #{maybe_request.base_index}" }
-        pp! record = @config.datasource.find(maybe_request, maybe_requests)
+        record = @config.datasource.find(maybe_request, maybe_requests)
         if record
           record.response(io)
         else
@@ -54,7 +54,7 @@ class Server
         end
       when RequestError
         Replay::Log.error { "Error caused when replaying request: #{maybe_request}" }
-        maybe_requests.response_error(io,maybe_request)
+        maybe_requests.response_error(io, maybe_request)
       end
     when UnsupportedProtocolError
       Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }

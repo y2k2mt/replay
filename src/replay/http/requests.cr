@@ -33,7 +33,7 @@ class HTTPRequests
     )
   end
 
-  def response_error(output : IO,error : Object? = nil) : Void
+  def response_error(output : IO, error : Object? = nil) : Void
     response = HTTP::Server::Response.new(output)
     response.content_type = "text/plain"
     case error
@@ -49,6 +49,7 @@ class HTTPRequests
     else
       response.status_code = 500
       response.puts "Error"
+      response.content_length = 5
     end
     response.flush
   end
