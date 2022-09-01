@@ -33,6 +33,17 @@ class Config
     end
   }
 
+  getter(records : Records | UnsupportedProtocolError) {
+    case scheme = base_uri.scheme
+    when "http"
+      HTTPRecords.new
+    when "https"
+      HTTPRecords.new
+    else
+      UnsupportedProtocolError.new(scheme)
+    end
+  }
+
   def initialize(@base_url : String, @port : Int16, @mode : Mode, @base_dir_path = "#{Path.home}/.replay-recorder")
   end
 

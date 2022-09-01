@@ -8,16 +8,17 @@ class HTTPRecord
   end
 
   def initialize(headers_content : IO, body_content : IO)
-    header_hash = Hash(String, Array(String)).from_json(headers_content.gets_to_end)
+    header = JSON.parse(headers_content.gets_to_end)
     response_headers = HTTP::Headers.new
-    header_hash.map do |k, v|
-      if k != "response_status"
-        response_headers[k] = v
+    header["headers"].as_h.map do |k, v|
+      if k != "status"
+        response_headers[k] = v.as_s
       end
     end
     @headers = response_headers
+    Replay::Log.debug { "Recorded response headers: #{response_headers}" }
     @body = body_content.gets_to_end
-    @response_status = header_hash["response_status"].to_i32
+    @response_status = header["status"].as_i
     @client_response = HTTP::Client::Response.new(@response_status, @body, @headers)
   end
 

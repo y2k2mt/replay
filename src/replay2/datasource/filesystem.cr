@@ -7,7 +7,7 @@ class FileSystemDatasource
   end
 
   def persist(request : Request, record : Record) : Record
-    index_hash = request.base_index
+    index_hash = request.id_index
     if (!File.directory?(@index_file_dir))
       Dir.mkdir_p(@index_file_dir)
     end
@@ -38,21 +38,18 @@ class FileSystemDatasource
       end
       found_index_file.try do |found|
         found_index = requests.from(JSON.parse(File.read(found)))
-        body_file = Dir["#{@reply_file_dir}/#{found_index.base_index}"].first?
-        header_file = Dir["#{@reply_file_dir}/#{found_index.base_index}_headers"].first?
+        body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
+        header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
         if (header_file && body_file)
           Replay::Log.debug { "Found header_file path: #{header_file}" }
           Replay::Log.debug { "Found body_file path: #{body_file}" }
-          response_headers = HTTP::Headers.new
-          header_file_hash = Hash(String, Array(String)).from_json(File.read(header_file))
-          header_file_hash.map do |k, v|
-            if k != "response_status"
-              response_headers[k] = v
-            end
+          case maybe_records = @config.records
+          when Records
+            maybe_records.from(File.open(header_file),File.open(body_file))
+          else
+            Replay::Log.debug { "Failed to parse header or body from file." }
+            nil
           end
-          response_body = File.read(body_file)
-          Replay::Log.debug { "Recorded response headers: #{response_headers}" }
-          Record.new(response_headers, response_body, header_file_hash["response_status"].first.to_i32)
         else
           Replay::Log.debug { "No header_file and body_file avairable." }
           nil

@@ -45,12 +45,15 @@ class HTTPRequest
   )
   end
 
-  def base_index : String
+  getter(base_index : String) {
     Digest::SHA256.hexdigest do |ctx|
       ctx << @host_name << @path << @method
     end
-  end
+  }
 
+  getter(id_index : String) {
+    "#{base_index}_#{@id}"
+  }
   def ==(other : Request) : Bool
     Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
     other.base_index == self.base_index &&
