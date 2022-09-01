@@ -1,7 +1,7 @@
 require "./shards"
-require "./replay2/*"
-require "./replay2/http/*"
-require "./replay2/datasource/*"
+require "./replay/*"
+require "./replay/http/*"
+require "./replay/datasource/*"
 
 def start_server(config : Config)
   server = Server.new(config)
