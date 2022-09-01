@@ -45,7 +45,7 @@ class FileSystemDatasource
           Replay::Log.debug { "Found body_file path: #{body_file}" }
           case maybe_records = @config.records
           when Records
-            maybe_records.from(File.open(header_file),File.open(body_file))
+            maybe_records.from(File.open(header_file), File.open(body_file))
           else
             Replay::Log.debug { "Failed to parse header or body from file." }
             nil

@@ -54,6 +54,7 @@ class HTTPRequest
   getter(id_index : String) {
     "#{base_index}_#{@id}"
   }
+
   def ==(other : Request) : Bool
     Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
     other.base_index == self.base_index &&

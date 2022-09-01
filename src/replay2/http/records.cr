@@ -1,11 +1,10 @@
 class HTTPRecords
   include Records
 
-  def initialize()
+  def initialize
   end
 
-  def from(header : IO,body : IO) : Record
-    HTTPRecord.new(header,body)
+  def from(header : IO, body : IO) : Record
+    HTTPRecord.new(header, body)
   end
-
 end
