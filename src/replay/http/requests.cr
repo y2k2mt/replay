@@ -32,4 +32,24 @@ class HTTPRequests
       },
     )
   end
+
+  def response_error(output : IO,error : Object? = nil) : Void
+    response = HTTP::Server::Response.new(output)
+    response.content_type = "text/plain"
+    case error
+    when RequestError
+      response.status_code = 400
+      response.print "Failed to parse request"
+    when ProxyError
+      response.status_code = 503
+      response.print "Failed to process proxy request"
+    when UnsupportedProtocolError
+      response.status_code = 500
+      response.print "Unsupported protocol"
+    else
+      response.status_code = 500
+      response.puts "Error"
+    end
+    response.flush
+  end
 end
