@@ -50,7 +50,7 @@ class Server
         when Record
           record.response(io)
         else
-          maybe_requests.response_error(io,record)
+          maybe_requests.response_error(io, record)
         end
       when RequestError
         Replay::Log.error { "Error caused when replaying request: #{maybe_request}" }
