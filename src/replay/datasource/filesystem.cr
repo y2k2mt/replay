@@ -25,18 +25,18 @@ class FileSystemDatasource
     record
   end
 
-  def find(request : Request, requests : Requests) : Record?
+  def find(request : Request, requests : Requests) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
     meta_index = request.base_index
     index_files = Dir["#{@index_file_dir}/#{meta_index}_*"]
     if index_files.empty?
       Replay::Log.debug { "No index_file avairable." }
-      nil
+      NoIndexFound.new(meta_index)
     else
       found_index_file = index_files.find do |index_file|
         candidate = requests.from(JSON.parse(File.read(index_file)))
         candidate == request
       end
-      found_index_file.try do |found|
+      if found = found_index_file
         found_index = requests.from(JSON.parse(File.read(found)))
         body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
         header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
@@ -48,16 +48,16 @@ class FileSystemDatasource
             maybe_records.from(File.open(header_file), File.open(body_file))
           else
             Replay::Log.debug { "Failed to parse header or body from file." }
-            nil
+            CorruptedReplayResource.new(found_index.id_index)
           end
         else
           Replay::Log.debug { "No header_file and body_file avairable." }
-          nil
+          NoResourceFound.new(meta_index)
         end
-      end || (
+      else
         Replay::Log.debug { "index_file not matched any." }
-        nil
-      )
+        NoIndexFound.new(meta_index)
+      end
     end
   end
 end

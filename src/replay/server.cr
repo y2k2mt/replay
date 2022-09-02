@@ -36,7 +36,7 @@ class Server
       end
     when UnsupportedProtocolError
       Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }
-      raise Exception.new("Unsupported protocol")
+      raise Exception.new("Unsupported protocol: #{maybe_requests.protocol}")
     end
   end
 
@@ -46,11 +46,11 @@ class Server
       case maybe_request = maybe_requests.from(io)
       when Request
         Replay::Log.debug { "Repeater: request index : #{maybe_request.base_index}" }
-        record = @config.datasource.find(maybe_request, maybe_requests)
-        if record
+        case record = @config.datasource.find(maybe_request, maybe_requests)
+        when Record
           record.response(io)
         else
-          maybe_requests.response_error(io)
+          maybe_requests.response_error(io,record)
         end
       when RequestError
         Replay::Log.error { "Error caused when replaying request: #{maybe_request}" }
@@ -58,7 +58,7 @@ class Server
       end
     when UnsupportedProtocolError
       Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }
-      raise Exception.new("Unsupported protocol")
+      raise Exception.new("Unsupported protocol: #{maybe_requests.protocol}")
     end
   end
 

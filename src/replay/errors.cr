@@ -10,3 +10,24 @@ struct UnsupportedProtocolError
   def initialize(@protocol : String?)
   end
 end
+
+struct NoIndexFound
+  getter index
+
+  def initialize(@index : String)
+  end
+end
+
+struct NoResourceFound
+  getter index
+
+  def initialize(@index : String)
+  end
+end
+
+struct CorruptedReplayResource
+  getter index
+
+  def initialize(@index : String)
+  end
+end
