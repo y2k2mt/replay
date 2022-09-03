@@ -4,3 +4,5 @@
 /.shards/
 *.dwarf
 shard.lock
+/dev/
+replay
