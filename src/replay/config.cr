@@ -22,25 +22,36 @@ class Config
     FileSystemDatasource.new(self)
   }
 
-  getter(requests : Requests | UnsupportedProtocolError) {
+  getter(requests : Requests) {
     case scheme = base_uri.scheme
     when "http"
       HTTPRequests.new(self)
     when "https"
       HTTPRequests.new(self)
     else
-      UnsupportedProtocolError.new(scheme)
+      raise UnsupportedProtocolError.new(scheme)
     end
   }
 
-  getter(records : Records | UnsupportedProtocolError) {
+  getter(records : Records) {
     case scheme = base_uri.scheme
     when "http"
       HTTPRecords.new
     when "https"
       HTTPRecords.new
     else
-      UnsupportedProtocolError.new(scheme)
+      raise UnsupportedProtocolError.new(scheme)
+    end
+  }
+
+  getter(errors : Errors) {
+    case scheme = base_uri.scheme
+    when "http"
+      HTTPErrors.new(self)
+    when "https"
+      HTTPErrors.new(self)
+    else
+      raise UnsupportedProtocolError.new(scheme)
     end
   }
 

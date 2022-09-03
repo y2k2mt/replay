@@ -1,10 +1,15 @@
+module Errors
+  def response_error(output : IO, error : Object? = nil) : Void
+  end
+end
+
 struct RequestError
 end
 
 struct ProxyError
 end
 
-struct UnsupportedProtocolError
+class UnsupportedProtocolError < Exception
   getter protocol
 
   def initialize(@protocol : String?)

@@ -22,43 +22,33 @@ class Server
   end
 
   def handle_record(io)
-    case maybe_requests = @config.requests
-    when Requests
-      case maybe_record = Recorder.record(io, maybe_requests, @config.datasource)
-      when Record
-        maybe_record.response(io)
-      when RequestError
-        Replay::Log.error { "Invalid request: #{maybe_record}" }
-        maybe_requests.response_error(io, maybe_record)
-      when ProxyError
-        Replay::Log.error { "Error caused when proxing request: #{maybe_record}" }
-        maybe_requests.response_error(io, maybe_record)
-      end
-    when UnsupportedProtocolError
-      Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }
-      raise Exception.new("Unsupported protocol: #{maybe_requests.protocol}")
+    requests = @config.requests
+    case maybe_record = Recorder.record(io, requests, @config.datasource)
+    when Record
+      maybe_record.response(io)
+    when RequestError
+      Replay::Log.error { "Invalid request: #{maybe_record}" }
+      @config.errors.response_error(io, maybe_record)
+    when ProxyError
+      Replay::Log.error { "Error caused when proxing request: #{maybe_record}" }
+      @config.errors.response_error(io, maybe_record)
     end
   end
 
   def handle_replay(io)
-    case maybe_requests = @config.requests
-    when Requests
-      case maybe_request = maybe_requests.from(io)
-      when Request
-        Replay::Log.debug { "Repeater: request index : #{maybe_request.base_index}" }
-        case record = @config.datasource.find(maybe_request, maybe_requests)
-        when Record
-          record.response(io)
-        else
-          maybe_requests.response_error(io, record)
-        end
-      when RequestError
-        Replay::Log.error { "Error caused when replaying request: #{maybe_request}" }
-        maybe_requests.response_error(io, maybe_request)
+    requests = @config.requests
+    case maybe_request = requests.from(io)
+    when Request
+      Replay::Log.debug { "Repeater: request index : #{maybe_request.base_index}" }
+      case record = @config.datasource.find(maybe_request, requests)
+      when Record
+        record.response(io)
+      else
+        @config.errors.response_error(io, record)
       end
-    when UnsupportedProtocolError
-      Replay::Log.error { "Unsupported protocol: #{maybe_requests.protocol}" }
-      raise Exception.new("Unsupported protocol: #{maybe_requests.protocol}")
+    when RequestError
+      Replay::Log.error { "Error caused when replaying request: #{maybe_request}" }
+      @config.errors.response_error(io, maybe_request)
     end
   end
 
