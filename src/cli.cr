@@ -4,7 +4,7 @@ server_port = 8899_i16
 mode = Config::Mode::Replay
 base_url : String? = nil
 
-parser = OptionParser.parse do |parser|
+parsed = OptionParser.parse do |parser|
   parser.banner = "Replay: Record and Preplay!"
 
   parser.on "-v", "--version", "Show version" do
@@ -42,7 +42,7 @@ end
 
 if !base_url
   STDERR.puts "ERROR: Option '-r' or '-R' is required."
-  STDERR.puts parser
+  STDERR.puts parsed
   exit(1)
 end
 

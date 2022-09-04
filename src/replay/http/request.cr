@@ -20,7 +20,7 @@ class HTTPRequest
     @headers = @http_request.headers.to_h
     if body = @http_request.body
       body_io = IO::Memory.new
-      bytes_read = IO.copy(body, body_io, limit: 1_048_576)
+      IO.copy(body, body_io, limit: 1_048_576)
       body_io.rewind
       @http_request.body = body_io
     end

@@ -44,12 +44,12 @@ class Config
     end
   }
 
-  getter(errors : Errors) {
+  getter(error_handler : ErrorHandler) {
     case scheme = base_uri.scheme
     when "http"
-      HTTPErrors.new(self)
+      HTTPErrorHandler.new(self)
     when "https"
-      HTTPErrors.new(self)
+      HTTPErrorHandler.new(self)
     else
       raise UnsupportedProtocolError.new(scheme)
     end

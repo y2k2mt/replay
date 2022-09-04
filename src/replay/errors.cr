@@ -1,4 +1,4 @@
-module Errors
+module ErrorHandler
   def response_error(output : IO, error : Object? = nil) : Void
   end
 end

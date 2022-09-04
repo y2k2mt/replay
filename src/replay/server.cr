@@ -28,10 +28,10 @@ class Server
       maybe_record.response(io)
     when RequestError
       Replay::Log.error { "Invalid request: #{maybe_record}" }
-      @config.errors.response_error(io, maybe_record)
+      @config.error_handler.response_error(io, maybe_record)
     when ProxyError
       Replay::Log.error { "Error caused when proxing request: #{maybe_record}" }
-      @config.errors.response_error(io, maybe_record)
+      @config.error_handler.response_error(io, maybe_record)
     end
   end
 
@@ -44,11 +44,11 @@ class Server
       when Record
         record.response(io)
       else
-        @config.errors.response_error(io, record)
+        @config.error_handler.response_error(io, record)
       end
     when RequestError
       Replay::Log.error { "Error caused when replaying request: #{maybe_request}" }
-      @config.errors.response_error(io, maybe_request)
+      @config.error_handler.response_error(io, maybe_request)
     end
   end
 
