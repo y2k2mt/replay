@@ -1,9 +1,9 @@
 class FileSystemDatasource
   include Datasource
 
-  def initialize(@config : Config)
-    @index_file_dir = "#{@config.base_dir_path}/indexes"
-    @reply_file_dir = "#{@config.base_dir_path}/replies"
+  def initialize(base_dir_path : String, @records : Records)
+    @index_file_dir = "#{base_dir_path}/indexes"
+    @reply_file_dir = "#{base_dir_path}/replies"
   end
 
   def persist(request : Request, record : Record) : Record
@@ -43,13 +43,7 @@ class FileSystemDatasource
         if (header_file && body_file)
           Replay::Log.debug { "Found header_file path: #{header_file}" }
           Replay::Log.debug { "Found body_file path: #{body_file}" }
-          case maybe_records = @config.records
-          when Records
-            maybe_records.from(File.open(header_file), File.open(body_file))
-          else
-            Replay::Log.debug { "Failed to parse header or body from file." }
-            CorruptedReplayResource.new(found_index.id_index)
-          end
+          @records.from(File.open(header_file), File.open(body_file))
         else
           Replay::Log.debug { "No header_file and body_file avairable." }
           NoResourceFound.new(meta_index)

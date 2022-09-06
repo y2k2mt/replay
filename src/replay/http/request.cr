@@ -11,10 +11,12 @@ class HTTPRequest
   @body : String
   @params : Hash(String, String)
 
-  def initialize(@http_request : HTTP::Request, @config : Config)
-    http_request.headers["Host"] = @config.base_uri_host
+  def initialize(@http_request : HTTP::Request, @base_uri : URI)
+    base_uri.host.try do |host|
+      http_request.headers["Host"] = host
+    end
     @id = Random::Secure.hex
-    @host_name = config.base_uri_host
+    @host_name = base_uri.host.not_nil!
     @path = @http_request.path
     @method = @http_request.method
     @headers = @http_request.headers.to_h
@@ -33,16 +35,23 @@ class HTTPRequest
   end
 
   def initialize(
-    @id,
-    @host_name,
-    @path,
-    @method,
-    @headers,
-    @body,
-    @params,
-    @http_request = HTTP::Request.new("", ""),
-    @config = Config.empty
+    id,
+    base_uri,
+    path,
+    method,
+    headers,
+    body,
+    params
   )
+    @id = id
+    @base_uri = base_uri
+    @host_name = base_uri.host.not_nil!
+    @path = path
+    @method = method
+    @headers = headers
+    @body = body
+    @params = params
+    @http_request = HTTP::Request.new("", "")
   end
 
   getter(base_index : String) {
@@ -66,7 +75,7 @@ class HTTPRequest
   def proxy
     ProxyError | Record
     @http_request.headers["Host"] = @host_name
-    client_response = HTTP::Client.new(@config.base_uri).exec(@http_request)
+    client_response = HTTP::Client.new(@base_uri).exec(@http_request)
     HTTPRecord.new(client_response) || ProxyError.new
   end
 

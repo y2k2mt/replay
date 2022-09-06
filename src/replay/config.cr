@@ -19,15 +19,15 @@ class Config
   }
 
   getter(datasource : Datasource) {
-    FileSystemDatasource.new(self)
+    FileSystemDatasource.new(self.base_dir_path, self.records)
   }
 
   getter(requests : Requests) {
     case scheme = base_uri.scheme
     when "http"
-      HTTPRequests.new(self)
+      HTTPRequests.new(self.base_uri)
     when "https"
-      HTTPRequests.new(self)
+      HTTPRequests.new(self.base_uri)
     else
       raise UnsupportedProtocolError.new(scheme)
     end
@@ -47,9 +47,9 @@ class Config
   getter(error_handler : ErrorHandler) {
     case scheme = base_uri.scheme
     when "http"
-      HTTPErrorHandler.new(self)
+      HTTPErrorHandler.new(self.mode)
     when "https"
-      HTTPErrorHandler.new(self)
+      HTTPErrorHandler.new(self.mode)
     else
       raise UnsupportedProtocolError.new(scheme)
     end

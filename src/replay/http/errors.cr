@@ -1,13 +1,13 @@
 class HTTPErrorHandler
   include ErrorHandler
 
-  def initialize(@config : Config)
+  def initialize(@mode : Config::Mode)
   end
 
   def response_error(output : IO, error : Object? = nil) : Void
     response = HTTP::Server::Response.new(output)
     response.content_type = "text/plain"
-    message = "Failed to #{@config.mode}"
+    message = "Failed to #{@mode}"
     case error
     when RequestError
       response.status_code = 400
@@ -30,7 +30,7 @@ class HTTPErrorHandler
     else
       response.status_code = 500
     end
-    final_message = "[#{@config.mode}] #{message}"
+    final_message = "[#{@mode}] #{message}"
     response.puts final_message
     response.content_length = final_message.size
     response.flush
