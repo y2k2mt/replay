@@ -19,7 +19,7 @@ class Config
   }
 
   getter(datasource : Datasource) {
-    FileSystemDatasource.new(self.base_dir_path, self.records)
+    FileSystemDatasource.new(self.base_dir_path, self.records, self.requests)
   }
 
   getter(requests : Requests) {

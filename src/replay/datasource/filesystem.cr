@@ -1,7 +1,7 @@
 class FileSystemDatasource
   include Datasource
 
-  def initialize(base_dir_path : String, @records : Records)
+  def initialize(base_dir_path : String, @records : Records, @requests : Requests)
     @index_file_dir = "#{base_dir_path}/indexes"
     @reply_file_dir = "#{base_dir_path}/replies"
   end
@@ -25,7 +25,7 @@ class FileSystemDatasource
     record
   end
 
-  def find(request : Request, requests : Requests) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
+  def find(request : Request) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
     meta_index = request.base_index
     index_files = Dir["#{@index_file_dir}/#{meta_index}_*"]
     if index_files.empty?
@@ -33,11 +33,11 @@ class FileSystemDatasource
       NoIndexFound.new(meta_index)
     else
       found_index_file = index_files.find do |index_file|
-        candidate = requests.from(JSON.parse(File.read(index_file)))
+        candidate = @requests.from(JSON.parse(File.read(index_file)))
         candidate == request
       end
       if found = found_index_file
-        found_index = requests.from(JSON.parse(File.read(found)))
+        found_index = @requests.from(JSON.parse(File.read(found)))
         body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
         header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
         if (header_file && body_file)

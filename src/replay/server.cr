@@ -22,8 +22,7 @@ class Server
   end
 
   def handle_record(io)
-    requests = @config.requests
-    case maybe_record = Recorder.record(io, requests, @config.datasource)
+    case maybe_record = Recorder.record(io, @config.requests, @config.datasource)
     when Record
       maybe_record.response(io)
     when RequestError
@@ -36,11 +35,10 @@ class Server
   end
 
   def handle_replay(io)
-    requests = @config.requests
-    case maybe_request = requests.from(io)
+    case maybe_request = @config.requests.from(io)
     when Request
       Replay::Log.debug { "Repeater: request index : #{maybe_request.base_index}" }
-      case record = @config.datasource.find(maybe_request, requests)
+      case record = @config.datasource.find(maybe_request)
       when Record
         record.response(io)
       else
