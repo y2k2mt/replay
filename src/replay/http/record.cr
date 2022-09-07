@@ -5,7 +5,7 @@ class HTTPRecord
     @headers : HTTP::Headers,
     @body : String,
     @response_status : Int32,
-    @client_response : HTTP::Client::Response
+    @response : HTTP::Client::Response
   )
   end
 
@@ -14,7 +14,7 @@ class HTTPRecord
       headers: client_response.headers,
       body: client_response.body,
       response_status: client_response.status_code,
-      client_response: client_response.not_nil!,
+      response: client_response.not_nil!,
     )
   end
 
@@ -33,12 +33,17 @@ class HTTPRecord
       headers: response_headers,
       body: body,
       response_status: response_status,
-      client_response: HTTP::Client::Response.new(response_status, body, response_headers),
+      response: HTTP::Client::Response.new(response_status, body, response_headers),
     )
   end
 
   def response(io : IO)
-    @client_response.to_io(io)
+    if (@headers["Transfer-Encoding"] == "chunked")
+      @headers.delete("Transfer-Encoding")
+      HTTP::Client::Response.new(@response_status, @body, @headers).to_io(io)
+    else
+      @response.to_io(io)
+    end
   end
 
   def metadatas : JSON::Any
