@@ -38,12 +38,13 @@ class HTTPRecord
   end
 
   def response(io : IO)
-    if (@headers["Transfer-Encoding"] == "chunked")
-      @headers.delete("Transfer-Encoding")
+    @headers["Transfer-Encoding"]?.try do |encoding|
+      if (encoding == "chunked")
+        # Chunked transfer encoding not supported.
+        @headers.delete("Transfer-Encoding")
+      end
       HTTP::Client::Response.new(@response_status, @body, @headers).to_io(io)
-    else
-      @response.to_io(io)
-    end
+    end || (@response.to_io(io))
   end
 
   def metadatas : JSON::Any
