@@ -25,7 +25,7 @@ class FileSystemDatasource
     record
   end
 
-  def find(request : Request) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
+  def get(request : Request) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
     meta_index = request.base_index
     index_files = Dir["#{@index_file_dir}/#{meta_index}_*"]
     if index_files.empty?
