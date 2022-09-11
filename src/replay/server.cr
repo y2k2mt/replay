@@ -38,7 +38,7 @@ class Server
     case maybe_request = @config.requests.from(io)
     when Request
       Replay::Log.debug { "Repeater: request index : #{maybe_request.base_index}" }
-      case record = @config.datasource.find(maybe_request)
+      case record = @config.datasource.get(maybe_request)
       when Record
         record.response(io)
       else

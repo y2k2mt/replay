@@ -37,21 +37,31 @@ class FileSystemDatasource
         candidate == request
       end
       if found = found_index_file
-        found_index = @requests.from(JSON.parse(File.read(found)))
-        body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
-        header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
-        if (header_file && body_file)
-          Replay::Log.debug { "Found header_file path: #{header_file}" }
-          Replay::Log.debug { "Found body_file path: #{body_file}" }
-          @records.from(File.open(header_file), File.open(body_file))
-        else
-          Replay::Log.debug { "No header_file and body_file avairable." }
-          NoResourceFound.new(meta_index)
-        end
+        load(found, meta_index)
       else
         Replay::Log.debug { "index_file not matched any." }
         NoIndexFound.new(meta_index)
       end
+    end
+  end
+
+  private def load(found : String, meta_index : String) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
+    found_index = @requests.from(JSON.parse(File.read(found)))
+    body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
+    header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
+    if (header_file && body_file)
+      Replay::Log.debug { "Found header_file path: #{header_file}" }
+      Replay::Log.debug { "Found body_file path: #{body_file}" }
+      @records.from(File.open(header_file), File.open(body_file))
+    else
+      Replay::Log.debug { "No header_file and body_file avairable." }
+      NoResourceFound.new(meta_index)
+    end
+  end
+
+  def find(query : Array(String)) : Array(Record)
+    Dir["#{@index_file_dir}/*"].filter do |index_file_path|
+      record = load(index_file_path, "")
     end
   end
 end
