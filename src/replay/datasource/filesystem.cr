@@ -52,7 +52,7 @@ class FileSystemDatasource
     if (header_file && body_file)
       Replay::Log.debug { "Found header_file path: #{header_file}" }
       Replay::Log.debug { "Found body_file path: #{body_file}" }
-      @records.from(File.open(header_file), File.open(body_file),found_index)
+      @records.from(File.open(header_file), File.open(body_file), found_index)
     else
       Replay::Log.debug { "No header_file and body_file avairable." }
       NoResourceFound.new(found_index.id_index)
