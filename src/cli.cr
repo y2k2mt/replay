@@ -54,9 +54,9 @@ if !base_url
 end
 
 base_url.try do |url|
-  if(query_options.empty?)
-  start_server(Config.new(url, server_port, mode))
+  if (query_options.empty?)
+    start_server(Config.new(url, server_port, mode))
   else
-    find_from_filesystem(Config.new(url,server_port,mode),query_options)
+    find_from_filesystem(Config.new(url, server_port, mode), query_options)
   end
 end
