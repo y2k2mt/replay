@@ -37,7 +37,7 @@ class FileSystemDatasource
         candidate == request
       end
       if found = found_index_file
-        load(found, meta_index)
+        load(found)
       else
         Replay::Log.debug { "index_file not matched any." }
         NoIndexFound.new(meta_index)
@@ -45,7 +45,7 @@ class FileSystemDatasource
     end
   end
 
-  private def load(found : String, meta_index : String) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
+  private def load(found : String) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
     found_index = @requests.from(JSON.parse(File.read(found)))
     body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
     header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
@@ -55,13 +55,18 @@ class FileSystemDatasource
       @records.from(File.open(header_file), File.open(body_file))
     else
       Replay::Log.debug { "No header_file and body_file avairable." }
-      NoResourceFound.new(meta_index)
+      NoResourceFound.new(found_index.id_index)
     end
   end
 
-  def find(query : Array(String)) : Array(Record)
-    Dir["#{@index_file_dir}/*"].filter do |index_file_path|
-      record = load(index_file_path, "")
-    end
+  def find(query : Array(String)) : Array(Record?)
+    (Dir["#{@index_file_dir}/*"].flat_map do |index_file_path|
+      case record = load(index_file_path)
+      when Record
+        record.match_query(query).try &.as(Record)
+      else
+        nil
+      end
+    end).reject(&.nil?)
   end
 end

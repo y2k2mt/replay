@@ -14,3 +14,7 @@ def start_server(config : Config)
 
   server.start
 end
+
+def find_from_filesystem(config : Config,query_options : Array(String)) : Array(Record?)
+  FileSystemDatasource.new(config.base_dir_path,config.records,config.requests).find(query_options)
+end

@@ -103,4 +103,13 @@ class HTTPRequest
       end
     end)
   end
+
+  def match_query(query : Array(String))
+    #FIXME:implicit dependency
+    if(self.host_name.include(query[0]) && (query[1]?.try { |q| self.method.include(q) } || true) && (query[2]?.try { |q| self.path.include(q) } || true))
+      self
+    else
+      nil
+    end
+  end
 end

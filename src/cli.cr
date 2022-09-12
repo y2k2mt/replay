@@ -3,6 +3,7 @@ require "./app"
 server_port = 8899_i16
 mode = Config::Mode::Replay
 base_url : String? = nil
+query_options : Array(String) = [] of String
 
 parsed = OptionParser.parse do |parser|
   parser.banner = "Replay: Record and Preplay!"
@@ -33,6 +34,12 @@ parsed = OptionParser.parse do |parser|
     base_url = url
   end
 
+  parser.on "-f URL <options...>", "--find URL <options>", "Find resources" do |options|
+    base_url = query_options[0]
+    mode = Config::Mode::Replay
+    query_options = options.split(" ")
+  end
+
   parser.invalid_option do |flag|
     STDERR.puts "ERROR: #{flag} is not a valid option."
     STDERR.puts parser
@@ -47,5 +54,9 @@ if !base_url
 end
 
 base_url.try do |url|
+  if(query_options.empty?)
   start_server(Config.new(url, server_port, mode))
+  else
+    find_from_filesystem(Config.new(url,server_port,mode),query_options)
+  end
 end
