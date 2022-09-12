@@ -34,10 +34,10 @@ parsed = OptionParser.parse do |parser|
     base_url = url
   end
 
-  parser.on "-f URL <options...>", "--find URL <options>", "Find resources" do |options|
+  parser.on "-f URL", "--find URL", "Find resources" do |options|
+    query_options = options.split(" ")
     base_url = query_options[0]
     mode = Config::Mode::Replay
-    query_options = options.split(" ")
   end
 
   parser.invalid_option do |flag|
@@ -57,6 +57,6 @@ base_url.try do |url|
   if (query_options.empty?)
     start_server(Config.new(url, server_port, mode))
   else
-    find_from_filesystem(Config.new(url, server_port, mode), query_options)
+    STDERR.puts find_from_filesystem(Config.new(url, server_port, mode), query_options)
   end
 end
