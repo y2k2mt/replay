@@ -6,6 +6,9 @@ class Config
 
   getter port, mode, base_dir_path
 
+  def initialize(@base_url : String, @port : Int16, @mode : Mode, @base_dir_path = "#{Path.home}/.replay-recorder")
+  end
+
   getter(base_uri : URI) {
     @base_url.try do |url|
       URI.parse(url)
@@ -54,9 +57,6 @@ class Config
       raise UnsupportedProtocolError.new(scheme)
     end
   }
-
-  def initialize(@base_url : String, @port : Int16, @mode : Mode, @base_dir_path = "#{Path.home}/.replay-recorder")
-  end
 
   def self.empty
     Config.new("", 0, Mode::Replay)
