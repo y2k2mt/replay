@@ -1,4 +1,7 @@
 module Request
+  def id_index : String
+  end
+
   def base_index : String
   end
 
