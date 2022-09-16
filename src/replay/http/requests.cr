@@ -14,7 +14,7 @@ class HTTPRequests
     end
   end
 
-  def from(request_json : JSON::Any)
+  def from(request_json : JSON::Any) : Request
     Replay::Log.debug { "Loading index content : #{request_json}." }
     HTTPRequest.new(
       request_json["id"].to_s,

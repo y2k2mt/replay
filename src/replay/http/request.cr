@@ -66,10 +66,15 @@ class HTTPRequest
 
   def ==(other : Request) : Bool
     Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
-    other.base_index == self.base_index &&
-      (self.headers.empty? || self.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
-      (self.params.empty? || self.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil) &&
-      (self.body.empty? || self.body == other.body)
+    case other
+    when HTTPRequest
+      other.base_index == self.base_index &&
+        (self.headers.empty? || self.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
+        (self.params.empty? || self.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil) &&
+        (self.body.empty? || self.body == other.body)
+    else
+      false
+    end
   end
 
   def proxy
