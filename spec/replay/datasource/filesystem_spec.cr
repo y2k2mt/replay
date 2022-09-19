@@ -32,7 +32,7 @@ describe FileSystemDatasource do
     actual = datasource.find(request)
     actual.should eq(record)
   end
-  
+
   it "can not retrive resources not avairable" do
     test_file_dir = "#{FileUtils.pwd}/spec/replay/datasource/filesystem_spec"
     request = MockRequest.new("not_avairable", "not_avairable_1770a", {"foo" => "bar"})
@@ -56,5 +56,4 @@ describe FileSystemDatasource do
     actual = datasource.find(request)
     actual.should be_a(NoResourceFound)
   end
-  
 end
