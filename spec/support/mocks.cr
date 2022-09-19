@@ -4,7 +4,7 @@ struct MockRecords
   def initialize(@expected_record : Record? = nil)
   end
 
-  def find(request : Request) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
+  def from(headers : IO, body : IO) : Record?
     @expected_record.not_nil!
   end
 end
@@ -46,7 +46,7 @@ end
 class MockRequest
   include Request
 
-  def initialize(@base_index : String = "", @id_index : String = "", @metadatas : Hash(String, String) = {} of String => String, @expected_request : Request? = nil)
+  def initialize(@base_index : String = "", @id_index : String = "", @metadatas : Hash(String, String) = {} of String => String)
   end
 
   def id_index : String
@@ -58,7 +58,7 @@ class MockRequest
   end
 
   def ==(other : Request) : Bool
-    (@expected_request.try { |e| e == other }) || false
+    self.hash == other.hash
   end
 
   def proxy

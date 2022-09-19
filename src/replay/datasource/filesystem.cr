@@ -49,11 +49,13 @@ class FileSystemDatasource
           NoResourceFound.new(meta_index)
         end
       end || (
-        Replay::Log.debug { "index_file not matched any." }
+        Replay::Log.debug { "index_file not matched any." };
         NoIndexFound.new(meta_index)
       )
     end
   rescue e
-    CorruptedReplayResource.new(e.message || "Found resource is broken!")
+    raise e
+
+    #CorruptedReplayResource.new(e.message || "Found resource is broken!")
   end
 end
