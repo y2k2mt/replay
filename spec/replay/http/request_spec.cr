@@ -4,7 +4,7 @@ describe HTTPRequest do
   it "can get properties via server request" do
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
     request = HTTP::Request.new("POST", "/hello", headers, "HELLO")
-    actual = HTTPRequest.new(request,URI.parse "http://base.uri")
+    actual = HTTPRequest.new(request, URI.parse "http://base.uri")
     # Write to response
     actual.host_name.should eq("base.uri")
     actual.path.should eq("/hello")
