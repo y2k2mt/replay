@@ -10,7 +10,7 @@ class HTTPRequests
     when HTTP::Request
       HTTPRequest.new(maybe_http_request, @base_uri)
     else
-      RequestError.new
+      RequestError.new "Failed to parse HTTP request"
     end
   end
 
