@@ -5,6 +5,7 @@ end
 
 struct RequestError
   getter message
+
   def initialize(@message : String?)
   end
 end
