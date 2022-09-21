@@ -10,7 +10,14 @@ describe HTTPRequest do
     actual.path.should eq("/hello")
     actual.method.should eq("POST")
     actual.body.should eq("HELLO")
+    actual.body.should eq("HELLO")
     actual.headers["Content-Type"][0].should eq("text/plain")
     actual.base_index.should eq("ce3e48c460a779f1554cd6e845a5fadf8e2c9f3b5126c65207294508e2592f6e")
+    actual_metadatas = actual.metadatas
+    actual_metadatas["host"].should eq("base.uri")
+    actual_metadatas["method"].should eq("POST")
+    actual_metadatas["path"].should eq("/hello")
+    actual_metadatas["indexed"]["body"].should eq("")
+    actual_metadatas["not_indexed"]["body"].should eq("HELLO")
   end
 end
