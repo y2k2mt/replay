@@ -68,4 +68,16 @@ class MockRequest
   def metadatas : JSON::Any
     JSON.parse @metadatas.to_json
   end
+
+  def body : String
+    ""
+  end
+
+  def headers : String
+    ""
+  end
+
+  def params : String
+    ""
+  end
 end
