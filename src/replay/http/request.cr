@@ -68,13 +68,54 @@ class HTTPRequest
     Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
     case other
     when HTTPRequest
+      # TODO: Plaggable comparators
       other.base_index == self.base_index &&
-        (self.headers.empty? || self.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
-        (self.params.empty? || self.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil) &&
-        (self.body.empty? || self.body == other.body)
+        match_headers(self, other) &&
+        (self.body.empty? || self.body == other.body || match_json(self, other) || match_form(self, other))
     else
       false
     end
+  end
+
+  private def match_headers(other)
+    (self.headers.empty? || self.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
+      (self.params.empty? || self.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil)
+  end
+
+  private def match_json(i : Request, other : Request) : Bool
+    me = JSON.parse i.body
+    another = JSON.parse other.body
+    match_json_internal me, another
+  rescue
+    false
+  end
+
+  private def match_json_internal(me : JSON::Any, other : JSON::Any) : Bool
+    me.as_h.keys.find do |key|
+      case value = other[key]
+      when .as_s?
+        puts value
+        value != me[key].as_s?
+      when .as_i?
+        value != me[key].as_i?
+      when .as_bool?
+        value != me[key].as_bool?
+      when .as_a?
+        value != me[key].as_a?
+      when .as_f?
+        value != me[key].as_f?
+      when .as_h?
+        me[key].as_h?.try do |_|
+          match_json_internal me[key], value
+        end ? nil : value
+      end
+    end == nil
+  end
+
+  private def match_form(i : Request, other : Request) : Bool
+    me = i.body.split("&").map(&.split("=").tap { |v| {v[0]? => v[1]?} }).to_h
+    another = other.body.split("&").map(&.split("=").tap { |v| {v[0]? => v[1]?} }).to_h
+    me.find { |k, v| another[k] != v } == nil
   end
 
   def proxy
