@@ -70,31 +70,28 @@ class HTTPRequest
     when HTTPRequest
       # TODO: Plaggable comparators
       other.base_index == self.base_index &&
-        match_headers(self, other) &&
+        match_headers(self,other) &&
         (self.body.empty? || self.body == other.body || match_json(self, other) || match_form(self, other))
     else
       false
     end
   end
 
-  private def match_headers(other)
-    (self.headers.empty? || self.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
-      (self.params.empty? || self.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil)
+  private def match_headers(i,other)
+    (i.headers.empty? || i.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
+      (i.params.empty? || i.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil)
   end
 
   private def match_json(i : Request, other : Request) : Bool
     me = JSON.parse i.body
     another = JSON.parse other.body
     match_json_internal me, another
-  rescue
-    false
   end
 
   private def match_json_internal(me : JSON::Any, other : JSON::Any) : Bool
     me.as_h.keys.find do |key|
       case value = other[key]
       when .as_s?
-        puts value
         value != me[key].as_s?
       when .as_i?
         value != me[key].as_i?
@@ -113,9 +110,16 @@ class HTTPRequest
   end
 
   private def match_form(i : Request, other : Request) : Bool
-    me = i.body.split("&").map(&.split("=").tap { |v| {v[0]? => v[1]?} }).to_h
-    another = other.body.split("&").map(&.split("=").tap { |v| {v[0]? => v[1]?} }).to_h
-    me.find { |k, v| another[k] != v } == nil
+    me = split_form(i.body)
+    another = split_form(other.body)
+    me.find { |k, v| another[k]?.try do |a| a != v end || true } == nil
+  end
+
+  private def split_form(body)
+    body.split("&").map do |and|
+      v = and.split("=")
+      {v[0] ,v[1]? || "None"}
+    end.to_h
   end
 
   def proxy
