@@ -70,14 +70,14 @@ class HTTPRequest
     when HTTPRequest
       # TODO: Plaggable comparators
       other.base_index == self.base_index &&
-        match_headers(self,other) &&
+        match_headers(self, other) &&
         (self.body.empty? || self.body == other.body || match_json(self, other) || match_form(self, other))
     else
       false
     end
   end
 
-  private def match_headers(i,other)
+  private def match_headers(i, other)
     (i.headers.empty? || i.headers.find { |k, v| !other.headers[k] || other.headers[k] != v } == nil) &&
       (i.params.empty? || i.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil)
   end
@@ -112,13 +112,15 @@ class HTTPRequest
   private def match_form(i : Request, other : Request) : Bool
     me = split_form(i.body)
     another = split_form(other.body)
-    me.find { |k, v| another[k]?.try do |a| a != v end || true } == nil
+    me.find { |k, v| another[k]?.try do |a|
+      a != v
+    end || true } == nil
   end
 
   private def split_form(body)
     body.split("&").map do |and|
       v = and.split("=")
-      {v[0] ,v[1]? || "None"}
+      {v[0], v[1]? || "None"}
     end.to_h
   end
 
