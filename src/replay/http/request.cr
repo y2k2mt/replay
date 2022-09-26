@@ -86,6 +86,8 @@ class HTTPRequest
     me = JSON.parse i.body
     another = JSON.parse other.body
     match_json_internal me, another
+  rescue e : JSON::ParseException
+    false
   end
 
   private def match_json_internal(me : JSON::Any, other : JSON::Any) : Bool
@@ -112,15 +114,20 @@ class HTTPRequest
   private def match_form(i : Request, other : Request) : Bool
     me = split_form(i.body)
     another = split_form(other.body)
-    me.find { |k, v| another[k]?.try do |a|
-      a != v
-    end || true } == nil
+    me.keys.find do |k|
+      !another.keys.includes?(k)
+    end == nil &&
+      me.find do |k, v|
+        another[k]?.try do |a|
+          v == nil || a != v
+        end
+      end == nil
   end
 
   private def split_form(body)
     body.split("&").map do |and|
       v = and.split("=")
-      {v[0], v[1]? || "None"}
+      {v[0], v[1]?}
     end.to_h
   end
 
