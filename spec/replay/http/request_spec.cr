@@ -78,4 +78,27 @@ describe HTTPRequest do
     request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
     (request2 == request1).should be_false
   end
+  it "can compare form proeprties" do
+    headers = HTTP::Headers{
+      "Content-Type" => "application/x-www-form-urlencoded",
+    }
+    form = "foo=bar&baz=qux&fuga=1"
+    another_form = "foo=bar&fuga=1"
+
+    request = HTTP::Request.new("POST", "/hello", headers, form)
+    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
+    (request2 == request1).should be_true
+  end
+  it "can not compare form proeprties" do
+    headers = HTTP::Headers{
+      "Content-Type" => "application/x-www-form-urlencoded",
+    }
+    form = "foo=bar&baz=qux&fuga=1"
+    another_form = "foo=baz&fuga=1"
+    request = HTTP::Request.new("POST", "/hello", headers, form)
+    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
+    (request2 == request1).should be_false
+  end
 end
