@@ -3,8 +3,9 @@ require "../../spec_helper"
 describe HTTPRecord do
   it "can get properties via client response" do
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
+    request = MockRequest.new("db0da", "db0da_1770a", {"foo" => "bar"})
     client_response = HTTP::Client::Response.new(200, "Hello", headers)
-    record = HTTPRecord.new(client_response)
+    record = HTTPRecord.new(client_response,request)
     actual_response = IO::Memory.new
     # Write to response
     record.response(actual_response)
@@ -18,7 +19,8 @@ describe HTTPRecord do
   it "can get properties via json formatted response" do
     body = IO::Memory.new "HELLO"
     header = IO::Memory.new "{\"headers\":{\"Content-Type\":\"text/plain\",\"Server\":\"test_server\",\"Set-Cookie\":\"foo=bar\"},\"status\":201}"
-    record = HTTPRecord.new(header, body)
+    request = MockRequest.new("db0da", "db0da_1770a", {"foo" => "bar"})
+    record = HTTPRecord.new(header, body, request)
     # Write to response
     actual_body = record.entity
     actual_body.should eq("HELLO")
