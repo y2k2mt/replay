@@ -10,11 +10,11 @@ class HTTPRequests
     when HTTP::Request
       HTTPRequest.new(maybe_http_request, @base_uri)
     else
-      RequestError.new
+      RequestError.new "Failed to parse HTTP request"
     end
   end
 
-  def from(request_json : JSON::Any)
+  def from(request_json : JSON::Any) : Request
     Replay::Log.debug { "Loading index content : #{request_json}." }
     HTTPRequest.new(
       request_json["id"].to_s,

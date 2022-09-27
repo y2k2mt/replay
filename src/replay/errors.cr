@@ -4,6 +4,10 @@ module ErrorHandler
 end
 
 struct RequestError
+  getter message
+
+  def initialize(@message : String?)
+  end
 end
 
 struct ProxyError

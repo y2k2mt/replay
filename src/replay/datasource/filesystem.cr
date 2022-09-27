@@ -36,13 +36,25 @@ class FileSystemDatasource
         candidate = @requests.from(JSON.parse(File.read(index_file)))
         candidate == request
       end
-      if found = found_index_file
-        load(found)
-      else
+      found_index_file.try do |found|
+        found_index = @requests.from(JSON.parse(File.read(found)))
+        body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
+        header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
+        if (header_file && body_file)
+          Replay::Log.debug { "Found header_file path: #{header_file}" }
+          Replay::Log.debug { "Found body_file path: #{body_file}" }
+          @records.from(File.open(header_file), File.open(body_file))
+        else
+          Replay::Log.debug { "No header_file and body_file avairable." }
+          NoResourceFound.new(meta_index)
+        end
+      end || (
         Replay::Log.debug { "index_file not matched any." }
         NoIndexFound.new(meta_index)
-      end
+      )
     end
+  rescue e
+    CorruptedReplayResource.new(e.message || "Found resource is broken!")
   end
 
   private def load(found : String) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound

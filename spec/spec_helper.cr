@@ -1,3 +1,3 @@
 require "spec"
-require "webmock"
 require "../src/app"
+require "./support/**"

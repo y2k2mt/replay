@@ -1,0 +1,29 @@
+{
+  "id": "1770a0838932637cb823570c908552e4",
+  "host": "hello.replay.org",
+  "method": "GET",
+  "path": "/test",
+  "indexed": {
+    "headers": {},
+    "params": {},
+    "body": ""
+  },
+  "not_indexed": {
+    "headers": {
+      "Host": [
+        "hello.replay.org"
+      ],
+      "User-Agent": [
+        "baz/1"
+      ],
+      "Accept": [
+        "*/*"
+      ]
+    },
+    "params": {
+      "q": "a",
+      "b": "c"
+    },
+    "body": ""
+  }
+}
