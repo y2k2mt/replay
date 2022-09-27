@@ -5,7 +5,7 @@ describe HTTPRecord do
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
     request = MockRequest.new("db0da", "db0da_1770a", {"foo" => "bar"})
     client_response = HTTP::Client::Response.new(200, "Hello", headers)
-    record = HTTPRecord.new(client_response,request)
+    record = HTTPRecord.new(client_response, request)
     actual_response = IO::Memory.new
     # Write to response
     record.response(actual_response)
