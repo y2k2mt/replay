@@ -35,7 +35,7 @@ parsed = OptionParser.parse do |parser|
   end
 
   parser.on "-f URL", "--find URL", "Find resources" do |options|
-    query_options = options.split(" ")
+    query_options = ARGV[1..]
     base_url = query_options[0]
     mode = Config::Mode::Replay
   end
