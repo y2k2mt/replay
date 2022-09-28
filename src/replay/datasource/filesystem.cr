@@ -75,12 +75,12 @@ class FileSystemDatasource
     (Dir["#{@index_file_dir}/*"].flat_map do |index_file_path|
       case record = load(index_file_path)
       when Record
-        record.match_query(query).try do |r|
+        record.match_query(query).try do |_|
           index_file_path
         end
       else
         nil
       end
-    end).reject(&.nil?)
+    end).reject(Nil)
   end
 end
