@@ -71,11 +71,13 @@ class FileSystemDatasource
     end
   end
 
-  def find(query : Array(String)) : Array(Record?)
+  def find(query : Array(String)) : Array(String?)
     (Dir["#{@index_file_dir}/*"].flat_map do |index_file_path|
       case record = load(index_file_path)
       when Record
-        record.match_query(query).as(Record?)
+        record.match_query(query).try do |r|
+          index_file_path
+        end
       else
         nil
       end

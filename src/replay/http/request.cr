@@ -165,7 +165,11 @@ class HTTPRequest
 
   def match_query(query : Array(String)) : Request?
     # FIXME:implicit dependency
-    if (self.host_name.includes?(URI.parse(query[0]).hostname.not_nil!) && (query[1]?.try { |q| self.method.includes?(q) } || true) && (query[2]?.try { |q| self.path.includes?(q) } || true))
+    if (
+         self.host_name == (query[0]?.try { |q| URI.parse(q).hostname } || "") &&
+         (method == nil || method == true) &&
+         (path == nil || path == true)
+       )
       self
     else
       nil
