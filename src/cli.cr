@@ -57,6 +57,9 @@ base_url.try do |url|
   if (query_options.empty?)
     start_server(Config.new(url, server_port, mode))
   else
-    STDERR.puts find_from_filesystem(Config.new(url, server_port, mode), query_options)
+    STDOUT.flush_on_newline = false
+    find_from_filesystem(Config.new(url, server_port, mode), query_options).each do |a|
+      STDOUT.puts a
+    end
   end
 end
