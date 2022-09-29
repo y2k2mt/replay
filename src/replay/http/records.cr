@@ -4,7 +4,7 @@ class HTTPRecords
   def initialize
   end
 
-  def from(header : IO, body : IO) : Record
-    HTTPRecord.new(header, body)
+  def from(header : IO, body : IO, request : Request) : Record | NoResourceFound
+    HTTPRecord.new(header, body, request)
   end
 end

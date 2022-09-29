@@ -29,7 +29,7 @@ describe FileSystemDatasource do
     records = MockRecords.new(record)
 
     datasource = FileSystemDatasource.new(test_file_dir, records, requests)
-    actual = datasource.find(request)
+    actual = datasource.get(request)
     actual.should eq(record)
   end
 
@@ -41,7 +41,7 @@ describe FileSystemDatasource do
     records = MockRecords.new(record)
 
     datasource = FileSystemDatasource.new(test_file_dir, records, requests)
-    actual = datasource.find(request)
+    actual = datasource.get(request)
     actual.should be_a(NoIndexFound)
   end
 
@@ -53,7 +53,7 @@ describe FileSystemDatasource do
     records = MockRecords.new(record)
 
     datasource = FileSystemDatasource.new(test_file_dir, records, requests)
-    actual = datasource.find(request)
+    actual = datasource.get(request)
     actual.should be_a(NoResourceFound)
   end
 end

@@ -25,7 +25,7 @@ class FileSystemDatasource
     record
   end
 
-  def find(request : Request) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
+  def get(request : Request) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
     meta_index = request.base_index
     index_files = Dir["#{@index_file_dir}/#{meta_index}_*"]
     if index_files.empty?
@@ -43,7 +43,7 @@ class FileSystemDatasource
         if (header_file && body_file)
           Replay::Log.debug { "Found header_file path: #{header_file}" }
           Replay::Log.debug { "Found body_file path: #{body_file}" }
-          @records.from(File.open(header_file), File.open(body_file))
+          @records.from(File.open(header_file), File.open(body_file), found_index)
         else
           Replay::Log.debug { "No header_file and body_file avairable." }
           NoResourceFound.new(meta_index)
@@ -55,5 +55,32 @@ class FileSystemDatasource
     end
   rescue e
     CorruptedReplayResource.new(e.message || "Found resource is broken!")
+  end
+
+  private def load(found : String) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
+    found_index = @requests.from(JSON.parse(File.read(found)))
+    body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
+    header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
+    if (header_file && body_file)
+      Replay::Log.debug { "Found header_file path: #{header_file}" }
+      Replay::Log.debug { "Found body_file path: #{body_file}" }
+      @records.from(File.open(header_file), File.open(body_file), found_index)
+    else
+      Replay::Log.debug { "No header_file and body_file avairable." }
+      NoResourceFound.new(found_index.id_index)
+    end
+  end
+
+  def find(query : Array(String))
+    (Dir["#{@index_file_dir}/*"].flat_map do |index_file_path|
+      case record = load(index_file_path)
+      when Record
+        record.match_query(query).try do |_|
+          index_file_path
+        end
+      else
+        nil
+      end
+    end).reject(Nil)
   end
 end

@@ -5,20 +5,22 @@ class HTTPRecord
     @headers : HTTP::Headers,
     @body : String,
     @response_status : Int32,
-    @response : HTTP::Client::Response
+    @response : HTTP::Client::Response,
+    @request : Request
   )
   end
 
-  def initialize(client_response : HTTP::Client::Response)
+  def initialize(client_response : HTTP::Client::Response, request : Request)
     initialize(
       headers: client_response.headers,
       body: client_response.body,
       response_status: client_response.status_code,
       response: client_response.not_nil!,
+      request: request,
     )
   end
 
-  def initialize(headers_content : IO, body_content : IO)
+  def initialize(headers_content : IO, body_content : IO, request : Request)
     header = JSON.parse(headers_content.gets_to_end)
     response_headers = HTTP::Headers.new
     header["headers"].as_h.map do |k, v|
@@ -34,6 +36,7 @@ class HTTPRecord
       body: body,
       response_status: response_status,
       response: HTTP::Client::Response.new(response_status, body, response_headers),
+      request: request,
     )
   end
 
@@ -58,5 +61,15 @@ class HTTPRecord
 
   def entity : String
     @body
+  end
+
+  def request : Request
+    @request
+  end
+
+  def match_query(query : Array(String)) : Record?
+    @request.match_query(query).try do |_|
+      self
+    end
   end
 end

@@ -135,7 +135,7 @@ class HTTPRequest
     ProxyError | Record
     @http_request.headers["Host"] = @host_name
     client_response = HTTP::Client.new(@base_uri).exec(@http_request)
-    HTTPRecord.new(client_response) || ProxyError.new
+    HTTPRecord.new(client_response, self) || ProxyError.new
   end
 
   def metadatas : JSON::Any
@@ -161,5 +161,18 @@ class HTTPRequest
         end
       end
     end)
+  end
+
+  def match_query(query : Array(String)) : Request?
+    # FIXME:implicit dependency
+    method_query = query[1]?.try { |q| self.method == q }
+    path_query = query[2]?.try { |q| self.path.includes?(q) }
+    if (self.host_name == (query[0]?.try { |q| URI.parse(q).hostname } || "") &&
+       (method_query == nil || method_query == true) &&
+       (path_query == nil || path_query == true))
+      self
+    else
+      nil
+    end
   end
 end

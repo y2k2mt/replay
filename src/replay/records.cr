@@ -1,4 +1,4 @@
 module Records
-  def from(headers : IO, body : IO) : Record?
+  def from(header : IO, body : IO, request : Request) : Record | NoResourceFound
   end
 end
