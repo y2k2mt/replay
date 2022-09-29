@@ -4,8 +4,8 @@ struct MockRecords
   def initialize(@expected_record : Record? = nil)
   end
 
-  def from(headers : IO, body : IO) : Record?
-    @expected_record.not_nil!
+  def from(headers : IO, body : IO, request : Request)
+    @expected_record || NoResourceFound.new("Record unsetted")
   end
 end
 
@@ -15,11 +15,11 @@ struct MockRequests
   def initialize(@expected_request : Request? = nil)
   end
 
-  def from(io : IO) : RequestError | Request
+  def from(io : IO)
     @expected_request || RequestError.new
   end
 
-  def from(request_json : JSON::Any) : Request
+  def from(request_json : JSON::Any)
     @expected_request.not_nil!
   end
 end
@@ -34,11 +34,11 @@ class MockRecord
     # NOP
   end
 
-  def metadatas : JSON::Any
-    JSON.parse @metadatas.to_json
+  def metadatas
+    JSON.parse(@metadatas.to_json)
   end
 
-  def entity : String
+  def entity
     @entity
   end
 end
@@ -49,35 +49,34 @@ class MockRequest
   def initialize(@base_index : String = "", @id_index : String = "", @metadatas : Hash(String, String) = {} of String => String)
   end
 
-  def id_index : String
+  def id_index
     @id_index
   end
 
-  def base_index : String
+  def base_index
     @base_index
   end
 
-  def ==(other : Request) : Bool
+  def ==(other : Request)
     self.hash == other.hash
   end
 
   def proxy
-    ProxyError | Record
   end
 
-  def metadatas : JSON::Any
+  def metadatas
     JSON.parse @metadatas.to_json
   end
 
-  def body : String
+  def body
     ""
   end
 
-  def headers : String
+  def headers
     ""
   end
 
-  def params : String
+  def params
     ""
   end
 end
