@@ -36,11 +36,9 @@ begin
     end
 
     parser.on "-f URL", "--find URL", "Find resources" do |_|
-      ARGV[1..]?.try do |query_options|
-        pp query_options
-        base_url = query_options[0]?
-        mode = Config::Mode::Replay
-      end || (STDERR.puts parser; exit(1))
+      query_options = ARGV[1..]
+      base_url = query_options[0]
+      mode = Config::Mode::Replay
     end
 
     parser.invalid_option do |flag|
