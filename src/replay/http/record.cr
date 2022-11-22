@@ -23,9 +23,16 @@ class HTTPRecord
   def initialize(headers_content : IO, body_content : IO, request : Request)
     header = JSON.parse(headers_content.gets_to_end)
     response_headers = HTTP::Headers.new
-    header["headers"].as_h.map do |k, v|
-      if k != "status"
+    header["headers"].as_h.reject do |k,_|
+      k == "status"
+    end.map do |k, v|
+      case v
+      when .as_s?
         response_headers[k] = v.as_s
+      when .as_a?
+        response_headers[k] = v.as_a.join(";")
+      else
+        # Do nothing
       end
     end
     Replay::Log.debug { "Recorded response headers: #{response_headers}" }

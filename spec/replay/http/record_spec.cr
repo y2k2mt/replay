@@ -41,7 +41,7 @@ describe HTTPRecord do
     actual_metadatas = record.metadatas
     actual_metadatas["headers"]["Content-Type"].should eq("text/plain")
     actual_metadatas["headers"]["Server"].should eq("test_server")
-    actual_metadatas["headers"]["Cookie"].should eq(["foo=bar","bar=qux"])
+    actual_metadatas["headers"]["Cookie"].should eq("foo=bar;baz=qux")
     actual_metadatas["status"].should eq(201)
   end
 end
