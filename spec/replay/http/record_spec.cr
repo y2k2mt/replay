@@ -30,4 +30,18 @@ describe HTTPRecord do
     actual_metadatas["headers"]["Set-Cookie"].should eq("foo=bar")
     actual_metadatas["status"].should eq(201)
   end
+  it "can get properties via json formatted response contains array" do
+    body = IO::Memory.new "HELLO"
+    header = IO::Memory.new "{\"headers\":{\"Content-Type\":\"text/plain\",\"Server\":\"test_server\",\"Cookie\":[\"foo=bar\",\"baz=qux\"]},\"status\":201}"
+    request = MockRequest.new("db0da", "db0da_1770a", {"foo" => "bar"})
+    record = HTTPRecord.new(header, body, request)
+    # Write to response
+    actual_body = record.entity
+    actual_body.should eq("HELLO")
+    actual_metadatas = record.metadatas
+    actual_metadatas["headers"]["Content-Type"].should eq("text/plain")
+    actual_metadatas["headers"]["Server"].should eq("test_server")
+    actual_metadatas["headers"]["Cookie"].should eq(["foo=bar","bar=qux"])
+    actual_metadatas["status"].should eq(201)
+  end
 end
