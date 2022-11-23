@@ -12,11 +12,14 @@ class HTTPRequest
   @params : Hash(String, String)
 
   def initialize(@http_request : HTTP::Request, @base_uri : URI)
-    base_uri.host.try do |host|
-      http_request.headers["Host"] = host
+    maybe_host = base_uri.host
+    if maybe_host
+      http_request.headers["Host"] = maybe_host
+      @host_name = maybe_host
+    else
+      raise "Request URI is collapsed : #{base_uri}"
     end
     @id = Random::Secure.hex
-    @host_name = base_uri.host.not_nil!
     @path = @http_request.path
     @method = @http_request.method
     @headers = @http_request.headers.to_h
@@ -45,7 +48,12 @@ class HTTPRequest
   )
     @id = id
     @base_uri = base_uri
-    @host_name = base_uri.host.not_nil!
+    maybe_host = base_uri.host
+    if maybe_host
+      @host_name = maybe_host
+    else
+      raise "Request URI is collapsed : #{base_uri}"
+    end
     @path = path
     @method = method
     @headers = headers

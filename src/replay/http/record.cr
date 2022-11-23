@@ -11,13 +11,17 @@ class HTTPRecord
   end
 
   def initialize(client_response : HTTP::Client::Response, request : Request)
-    initialize(
-      headers: client_response.headers,
-      body: client_response.body,
-      response_status: client_response.status_code,
-      response: client_response.not_nil!,
-      request: request,
-    )
+    if client_response
+      initialize(
+        headers: client_response.headers,
+        body: client_response.body,
+        response_status: client_response.status_code,
+        response: client_response,
+        request: request,
+      )
+    else
+      raise "Client response is not avairable for record"
+    end
   end
 
   def initialize(headers_content : IO, body_content : IO, request : Request)
