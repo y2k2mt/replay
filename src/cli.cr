@@ -69,7 +69,7 @@ end
 base_url.try do |url|
   if (query_options.empty?)
     base_dir.try do |dir|
-      start_server(Config.new(url, server_port, mode,dir))
+      start_server(Config.new(url, server_port, mode, dir))
     end || (
       start_server(Config.new(url, server_port, mode))
     )
