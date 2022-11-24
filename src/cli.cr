@@ -4,6 +4,7 @@ server_port = 8899_i16
 mode = Config::Mode::Replay
 base_url : String? = nil
 query_options : Array(String) = [] of String
+base_dir : String? = nil
 
 begin
   parsed = OptionParser.parse do |parser|
@@ -22,6 +23,12 @@ begin
     parser.on "-p PORT", "--port PORT", "Server port" do |port|
       port.to_i16?.try do |port_number|
         server_port = port_number
+      end
+    end
+
+    parser.on "-d DIR", "--dir DIR", "Base directory for records and indexes" do |dir|
+      dir.try do |d|
+        base_dir = d
       end
     end
 
@@ -61,7 +68,11 @@ end
 
 base_url.try do |url|
   if (query_options.empty?)
-    start_server(Config.new(url, server_port, mode))
+    base_dir.try do |dir|
+      start_server(Config.new(url, server_port, mode,dir))
+    end || (
+      start_server(Config.new(url, server_port, mode))
+    )
   else
     STDOUT.flush_on_newline = false
     find_from_filesystem(Config.new(url, server_port, mode), query_options).each do |a|
