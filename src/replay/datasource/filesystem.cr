@@ -27,7 +27,7 @@ class FileSystemDatasource
 
   def get(request : Request) : Record | NoIndexFound | CorruptedReplayResource | NoResourceFound
     meta_index = request.base_index
-    index_files = Dir["#{@index_file_dir}/#{meta_index}_*"]
+    index_files = Dir["#{@index_file_dir}/**/#{meta_index}_*"]
     if index_files.empty?
       Replay::Log.debug { "No index_file avairable." }
       NoIndexFound.new(meta_index)
@@ -37,6 +37,7 @@ class FileSystemDatasource
         candidate == request
       end
       found_index_file.try do |found|
+        Replay::Log.debug { "Found index_file path: #{found}" }
         found_index = @requests.from(JSON.parse(File.read(found)))
         body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
         header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?
