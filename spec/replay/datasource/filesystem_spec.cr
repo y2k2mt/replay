@@ -31,6 +31,20 @@ describe FileSystemDatasource do
     datasource = FileSystemDatasource.new(test_file_dir, records, requests)
     actual = datasource.get(request)
     actual.should eq(record)
+    actual.as(Record).entity.should eq("baz=qux")
+  end
+
+  it "can retrive resources on sub dir" do
+    test_file_dir = "#{FileUtils.pwd}/spec/replay/datasource/filesystem_spec"
+    request = MockRequest.new("db0da", "db0da_1920c", {"baz" => "qux"})
+    requests = MockRequests.new(request)
+    record = MockRecord.new({"foo" => "bar"}, "quux=corge")
+    records = MockRecords.new(record)
+
+    datasource = FileSystemDatasource.new(test_file_dir, records, requests)
+    actual = datasource.get(request)
+    actual.should eq(record)
+    actual.as(Record).entity.should eq("quux=corge")
   end
 
   it "can not retrive resources not avairable" do
