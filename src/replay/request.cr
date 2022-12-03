@@ -5,7 +5,7 @@ module Request
   def base_index : String
   end
 
-  def score(other : Request) : Int
+  def score(other : Request) : Int32
   end
 
   def proxy
