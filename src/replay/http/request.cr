@@ -142,7 +142,7 @@ class HTTPRequest
         end
       end
     rescue e : KeyError
-      return 0
+      0
     end
   end
 
