@@ -32,12 +32,14 @@ class FileSystemDatasource
       Replay::Log.debug { "No index_file avairable." }
       NoIndexFound.new(meta_index)
     else
-      found_index_file = index_files.find do |index_file|
+      most_matched_index_file_path : String? = index_files.map do |index_file|
         candidate = @requests.from(JSON.parse(File.read(index_file)))
-        candidate == request
-      end
-      found_index_file.try do |found|
-        Replay::Log.debug { "Found index_file path: #{found}" }
+        {candidate.score(request), index_file}
+      end.max_by? do |t|
+        t[0]
+      end.try &.[1]
+      most_matched_index_file_path.try do |found|
+        Replay::Log.debug { "Most matched index_file path: #{found}" }
         found_index = @requests.from(JSON.parse(File.read(found)))
         body_file = Dir["#{@reply_file_dir}/#{found_index.id_index}"].first?
         header_file = Dir["#{@reply_file_dir}/#{found_index.id_index}_headers"].first?

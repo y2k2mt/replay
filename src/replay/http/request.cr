@@ -72,16 +72,24 @@ class HTTPRequest
     "#{base_index}_#{@id}"
   }
 
-  def ==(other : Request) : Bool
+  def score(other : Request) : Int32
     Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
     case other
     when HTTPRequest
-      # TODO: Plaggable comparators
-      other.base_index == self.base_index &&
-        match_headers(self, other) &&
-        (self.body.empty? || self.body == other.body || match_json(self, other) || match_form(self, other))
+      if (other.base_index != self.base_index || !match_headers(self, other))
+        -1
+      else
+        # TODO: Plaggable comparators
+        if self.body.empty?
+          0
+        elsif self.body == other.body
+          1024
+        else
+          match_json(self, other) + match_form(self, other)
+        end
+      end
     else
-      false
+      -1
     end
   end
 
@@ -90,46 +98,59 @@ class HTTPRequest
       (i.params.empty? || i.params.find { |k, v| !other.params[k] || other.params[k] != v } == nil)
   end
 
-  private def match_json(i : Request, other : Request) : Bool
+  private def match_json(i : Request, other : Request) : Int32
     me = JSON.parse i.body
     another = JSON.parse other.body
-    match_json_internal me, another
+    match_json_internal me, another, 0
   rescue e : JSON::ParseException
-    false
+    0
   end
 
-  private def match_json_internal(me : JSON::Any, other : JSON::Any) : Bool
-    me.as_h.keys.find do |key|
+  private def match_json_internal(me : JSON::Any, other : JSON::Any, score : Int32) : Int32
+    me.as_h.keys.reduce(score) do |acc, key|
       case value = other[key]
       when .as_s?
-        value != me[key].as_s?
+        if value = me[key].as_s?
+          acc + 1
+        end
       when .as_i?
-        value != me[key].as_i?
+        if value == me[key].as_i?
+          acc + 1
+        end
       when .as_bool?
-        value != me[key].as_bool?
+        if value == me[key].as_bool?
+          acc + 1
+        end
       when .as_a?
-        value != me[key].as_a?
+        if value == me[key].as_a?
+          acc + 1
+        end
       when .as_f?
-        value != me[key].as_f?
+        if value == me[key].as_f?
+          acc + 1
+        end
       when .as_h?
         me[key].as_h?.try do |_|
-          match_json_internal me[key], value
-        end ? nil : value
+          match_json_internal me[key], value, score
+        end
       end
-    end == nil
+    end
+    score
   end
 
-  private def match_form(i : Request, other : Request) : Bool
+  private def match_form(i : Request, other : Request) : Int32
     me = split_form(i.body)
     another = split_form(other.body)
-    me.keys.find do |k|
+    has_any_key = me.keys.find do |k|
       !another.keys.includes?(k)
-    end == nil &&
-      me.find do |k, v|
+    end
+    has_any_key.try do |_|
+      me.count do |k, v|
         another[k]?.try do |a|
           v == nil || a != v
         end
-      end == nil
+      end
+    end || 0
   end
 
   private def split_form(body)

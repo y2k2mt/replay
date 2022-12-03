@@ -57,8 +57,12 @@ class MockRequest
     @base_index
   end
 
-  def ==(other : Request)
-    self.hash == other.hash
+  def score(other : Request) : Int32
+    if self.hash == other.hash
+      1
+    else
+      -1
+    end
   end
 
   def proxy
