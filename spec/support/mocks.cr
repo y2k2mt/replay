@@ -19,8 +19,8 @@ struct MockRequests
     @expected_request || RequestError.new
   end
 
-  def from(request_json : JSON::Any)
-    @expected_request.not_nil!
+  def from(request_json : JSON::Any) : Request
+    @expected_request || raise "Expecred request is not set."
   end
 end
 
