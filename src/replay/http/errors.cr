@@ -26,7 +26,7 @@ class HTTPErrorHandler
       message = "Not recorded yet : No resource found : #{error.index}"
     when CorruptedReplayResource
       response.status_code = 500
-      message = "Broken resource : #{error.index}"
+      message = "Broken resource : #{error.message} -> #{error.index}"
     else
       response.status_code = 500
     end

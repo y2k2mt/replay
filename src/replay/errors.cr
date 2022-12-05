@@ -35,8 +35,8 @@ struct NoResourceFound
 end
 
 struct CorruptedReplayResource
-  getter index
+  getter message, index
 
-  def initialize(@index : String)
+  def initialize(@message : String, @index : String? = nil)
   end
 end
