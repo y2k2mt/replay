@@ -32,9 +32,13 @@ class FileSystemDatasource
       Replay::Log.debug { "No index_file avairable." }
       NoIndexFound.new(meta_index)
     else
+      Replay::Log.debug { "#{index_files.size} index_file are avairable." }
       most_matched_index_file_path : String? = index_files.map do |index_file|
+        Replay::Log.debug { "Parsing: #{index_file}" }
         candidate = @requests.from(JSON.parse(File.read(index_file)))
-        {candidate.score(request), index_file}
+        scored = candidate.score(request)
+        Replay::Log.debug { "Score: #{scored} for #{index_file}" }
+        {scored, index_file}
       end.max_by? do |t|
         t[0]
       end.try &.[1]
