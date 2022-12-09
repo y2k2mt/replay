@@ -6,7 +6,7 @@ describe HTTPRequests do
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
     request = HTTP::Request.new("POST", "/hello", headers, "HELLO")
     request.to_io(io)
-    actual = HTTPRequests.new(URI.parse "http://base.uri").from(IO::Memory.new(io.to_s)).as(HTTPRequest)
+    actual = HTTPRequests.new(URI.parse "http://base.uri").from(IO::Memory.new(io.to_s)).as(IncomingHTTPRequest)
     actual.host_name.should eq("base.uri")
     actual.path.should eq("/hello")
     actual.method.should eq("POST")
@@ -48,7 +48,7 @@ describe HTTPRequests do
   }
 }
     }
-    actual = HTTPRequests.new(URI.parse "http://base.uri").from(JSON.parse(json)).as(HTTPRequest)
+    actual = HTTPRequests.new(URI.parse "http://base.uri").from(JSON.parse(json)).as(RecordedHTTPRequest)
     actual.host_name.should eq("base.uri")
     actual.path.should eq("/test")
     actual.method.should eq("GET")

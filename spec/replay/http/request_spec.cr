@@ -1,10 +1,10 @@
 require "../../spec_helper"
 
-describe HTTPRequest do
+describe IncomingHTTPRequest do
   it "can get properties via server request" do
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
     request = HTTP::Request.new("POST", "/hello", headers, "HELLO")
-    actual = HTTPRequest.new(request, URI.parse "http://base.uri")
+    actual = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
     # Write to response
     actual.host_name.should eq("base.uri")
     actual.path.should eq("/hello")
@@ -45,15 +45,15 @@ describe HTTPRequest do
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
-    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
     (request2.score(request1)).should eq 1
   end
 
   it "can get multiple properties via server request" do
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
     request = HTTP::Request.new("POST", "/hello", headers, "HELLO")
-    actual = HTTPRequest.new(request, URI.parse "http://base.uri")
+    actual = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
     # Write to response
     actual.host_name.should eq("base.uri")
     actual.path.should eq("/hello")
@@ -95,8 +95,8 @@ describe HTTPRequest do
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
-    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
     (request2.score(request1)).should eq 2
   end
 
@@ -124,8 +124,8 @@ describe HTTPRequest do
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
-    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/bye", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/bye", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
     (request2.score(request1)).should eq -1
   end
 
@@ -154,8 +154,8 @@ describe HTTPRequest do
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
-    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
     (request2.score(request1)).should eq -1
   end
 
@@ -167,8 +167,8 @@ describe HTTPRequest do
     another_form = "foo=bar&fuga=1"
 
     request = HTTP::Request.new("POST", "/hello", headers, form)
-    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
+    request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
     (request2.score(request1)).should eq 2
   end
   it "can not compare form proeprties" do
@@ -178,8 +178,8 @@ describe HTTPRequest do
     form = "foo=bar&baz=qux&fuga=1"
     another_form = "foo=baz&fuga=1"
     request = HTTP::Request.new("POST", "/hello", headers, form)
-    request1 = HTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = HTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello_foo", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
+    request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello_foo", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
     (request2.score(request1)).should eq -1
   end
 end
