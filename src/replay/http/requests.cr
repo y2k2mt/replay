@@ -8,7 +8,7 @@ class HTTPRequests
     maybe_http_request = HTTP::Request.from_io(io)
     case maybe_http_request
     when HTTP::Request
-      HTTPRequest.new(maybe_http_request, @base_uri)
+      IncomingHTTPRequest.new(maybe_http_request, @base_uri)
     else
       RequestError.new "Failed to parse HTTP request"
     end
@@ -16,7 +16,7 @@ class HTTPRequests
 
   def from(request_json : JSON::Any) : Request
     Replay::Log.debug { "Loading index content : #{request_json}." }
-    HTTPRequest.new(
+    RecordedHTTPRequest.new(
       request_json["id"].to_s,
       @base_uri,
       request_json["path"].to_s,

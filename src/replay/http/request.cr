@@ -1,4 +1,4 @@
-class HTTPRequest
+class IncomingHTTPRequest
   include Request
 
   getter host_name, path, method, body, params, headers
@@ -36,6 +36,80 @@ class HTTPRequest
     end
     @params = http_request.query_params.to_h
   end
+
+  getter(base_index : String) {
+    Digest::SHA256.hexdigest do |ctx|
+      ctx << @host_name << @path << @method
+    end
+  }
+
+  getter(id_index : String) {
+    "#{base_index}_#{@id}"
+  }
+
+  def score(other : Request) : Int32
+    -1
+  end
+
+  def proxy
+    ProxyError | Record
+    @http_request.headers["Host"] = @host_name
+    client_response = HTTP::Client.new(@base_uri).exec(@http_request)
+    HTTPRecord.new(client_response, self) || ProxyError.new
+  end
+
+  def metadatas : JSON::Any
+    JSON.parse(JSON.build do |json|
+      json.object do
+        json.field "id", @id
+        json.field "host", @host_name
+        json.field "method", @method
+        json.field "path", @path
+        json.field "indexed" do
+          json.object do
+            json.field "headers", {} of String => Array(String)
+            json.field "params", {} of String => String
+            json.field "body", ""
+          end
+        end
+        json.field "not_indexed" do
+          json.object do
+            json.field "headers", @headers
+            json.field "params", @params
+            json.field "body", @body
+          end
+        end
+      end
+    end)
+  end
+
+  def match_query(query : Array(String)) : Request?
+    # FIXME:implicit dependency
+    method_query = query[1]?.try { |q| self.method == q }
+    path_query = query[2]?.try { |q| self.path.includes?(q) }
+    if (self.host_name == (query[0]?.try { |q| URI.parse(q).hostname } || "") &&
+       (method_query == nil || method_query == true) &&
+       (path_query == nil || path_query == true))
+      self
+    else
+      nil
+    end
+  end
+end
+
+class RecordedHTTPRequest
+  include Request
+
+  getter host_name, path, method, body, params, headers
+
+  @id : String
+  @host_name : String
+  @method : String
+  @path : String
+  @headers : Hash(String, Array(String))
+  @body : String
+  @params : Hash(String, String)
+  @base_uri : URI
 
   def initialize(
     id,
@@ -75,7 +149,7 @@ class HTTPRequest
   def score(other : Request) : Int32
     Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
     case other
-    when HTTPRequest
+    when IncomingHTTPRequest
       if (other.base_index != self.base_index || !match_headers(self, other))
         -1
       else
