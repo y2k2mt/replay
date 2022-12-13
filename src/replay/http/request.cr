@@ -111,29 +111,25 @@ class RecordedHTTPRequest
   @params : Hash(String, String)
   @base_uri : URI
 
-  def initialize(
-    id,
-    base_uri,
-    path,
-    method,
-    headers,
-    body,
-    params
-  )
-    @id = id
-    @base_uri = base_uri
-    maybe_host = base_uri.host
+  def initialize(@base_uri : URI?, request_json : JSON::Any)
+    @id = request_json["id"].to_s
+    @path = request_json["path"].to_s
+    @method = request_json["method"].to_s
+    @headers = request_json["indexed"]["headers"].as_h.reduce({} of String => Array(String)) do |acc, (k, v)|
+      acc[k] = v.as_a.map(&.to_s)
+      acc
+    end
+    maybe_host = @base_uri.host
     if maybe_host
       @host_name = maybe_host
     else
       raise "Request URI is collapsed : #{base_uri}"
     end
-    @path = path
-    @method = method
-    @headers = headers
-    @body = body
-    @params = params
-    @http_request = HTTP::Request.new("", "")
+    @body = request_json["indexed"]["body"].as_s
+    @params = request_json["indexed"]["params"].as_h.reduce({} of String => String) do |acc, (k, v)|
+      acc[k] = v.as_s
+      acc
+    end
   end
 
   getter(base_index : String) {
