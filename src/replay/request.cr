@@ -15,5 +15,4 @@ module Request
 
   def metadatas : JSON::Any
   end
-
 end
