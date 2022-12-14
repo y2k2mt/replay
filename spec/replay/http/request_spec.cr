@@ -37,16 +37,37 @@ describe IncomingHTTPRequest do
       }
     }
 
-    another_json = %q{
+    recorded = %q{
       {
-        "hoge": {
-          "fuga": 1
+        "id": "bda3eaef950904c8ca0e307e45ea88a1",
+        "host": "base.uri",
+        "method": "POST",
+        "path": "/hello",
+        "indexed": {
+          "headers": {},
+          "params": {},
+          "body": "{\"hoge\":{\"fuga\":1}}"
+        },
+        "not_indexed": {
+          "headers": {
+            "Host": [
+              "base.uri"
+            ],
+            "User-Agent": [
+              "curl/7.81.0"
+            ],
+            "Accept": [
+              "*/*"
+            ]
+          },
+          "params": {},
+          "body": "{\"hoge\":{\"fuga\":1}}"
         }
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
     request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
     (request2.score(request1)).should eq 1
   end
 
@@ -86,21 +107,41 @@ describe IncomingHTTPRequest do
       }
     }
 
-    another_json = %q{
+    recorded = %q{
       {
-        "foo":"bar",
-        "hoge": {
-          "baz" : [1,3,2]
+        "id": "bda3eaef950904c8ca0e307e45ea88a1",
+        "host": "base.uri",
+        "method": "POST",
+        "path": "/hello",
+        "indexed": {
+          "headers": {},
+          "params": {},
+          "body": "{\"foo\":\"bar\",\"hoge\":{\"baz\":[1,3,2]}}"
+        },
+        "not_indexed": {
+          "headers": {
+            "Host": [
+              "base.uri"
+            ],
+            "User-Agent": [
+              "curl/7.81.0"
+            ],
+            "Accept": [
+              "*/*"
+            ]
+          },
+          "params": {},
+          "body": "{\"foo\":\"bar\",\"hoge\":{\"baz\":[1,3,2]}}"
         }
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
     request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
     (request2.score(request1)).should eq 2
   end
 
-  it "can compare json proeprties" do
+  it "can not compare json proeprties because path is not matched" do
     headers = HTTP::Headers{
       "Content-Type" => "application/json",
     }
@@ -116,16 +157,37 @@ describe IncomingHTTPRequest do
       }
     }
 
-    another_json = %q{
+    recorded = %q{
       {
-        "hoge": {
-          "fuga": 1
+        "id": "bda3eaef950904c8ca0e307e45ea88a1",
+        "host": "base.uri",
+        "method": "POST",
+        "path": "/bye",
+        "indexed": {
+          "headers": {},
+          "params": {},
+          "body": "{\"hoge\":{\"fuga\":1}}"
+        },
+        "not_indexed": {
+          "headers": {
+            "Host": [
+              "base.uri"
+            ],
+            "User-Agent": [
+              "curl/7.81.0"
+            ],
+            "Accept": [
+              "*/*"
+            ]
+          },
+          "params": {},
+          "body": "{\"hoge\":{\"fuga\":1}}"
         }
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
     request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/bye", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
     (request2.score(request1)).should eq -1
   end
 
@@ -144,18 +206,37 @@ describe IncomingHTTPRequest do
         }
       }
     }
-    another_json = %q{
+    recorded = %q{
       {
-        "foo":"bar",
-        "hoge": {
-          "fuga": 2,
-          "baz" : [1,3,2]
+        "id": "bda3eaef950904c8ca0e307e45ea88a1",
+        "host": "base.uri",
+        "method": "POST",
+        "path": "/hello",
+        "indexed": {
+          "headers": {},
+          "params": {},
+          "body": "{\"foo\":\"bar\",\"hoge\":{\"fuga\":2,\"baz\":[1,3,2]}}"
+        },
+        "not_indexed": {
+          "headers": {
+            "Host": [
+              "base.uri"
+            ],
+            "User-Agent": [
+              "curl/7.81.0"
+            ],
+            "Accept": [
+              "*/*"
+            ]
+          },
+          "params": {},
+          "body": "{\"foo\":\"bar\",\"hoge\":{\"fuga\":2,\"baz\":[1,3,2]}}"
         }
       }
     }
     request = HTTP::Request.new("POST", "/hello", headers, json)
     request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_json, params: {} of String => String)
+    request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
     (request2.score(request1)).should eq -1
   end
 
@@ -164,11 +245,38 @@ describe IncomingHTTPRequest do
       "Content-Type" => "application/x-www-form-urlencoded",
     }
     form = "foo=bar&baz=qux&fuga=1"
-    another_form = "foo=bar&fuga=1"
+    recorded = %q{
+      {
+        "id": "bda3eaef950904c8ca0e307e45ea88a1",
+        "host": "base.uri",
+        "method": "POST",
+        "path": "/hello",
+        "indexed": {
+          "headers": {},
+          "params": {},
+          "body": "foo=bar&fuga=1"
+        },
+        "not_indexed": {
+          "headers": {
+            "Host": [
+              "base.uri"
+            ],
+            "User-Agent": [
+              "curl/7.81.0"
+            ],
+            "Accept": [
+              "*/*"
+            ]
+          },
+          "params": {},
+          "body": "foo=bar&fuga=1"
+        }
+      }
+    }
 
     request = HTTP::Request.new("POST", "/hello", headers, form)
     request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
+    request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
     (request2.score(request1)).should eq 2
   end
   it "can not compare form proeprties" do
@@ -176,10 +284,37 @@ describe IncomingHTTPRequest do
       "Content-Type" => "application/x-www-form-urlencoded",
     }
     form = "foo=bar&baz=qux&fuga=1"
-    another_form = "foo=baz&fuga=1"
+    recorded = %q{
+      {
+        "id": "bda3eaef950904c8ca0e307e45ea88a1",
+        "host": "base.uri",
+        "method": "POST",
+        "path": "/hello",
+        "indexed": {
+          "headers": {},
+          "params": {},
+          "body": "foo=baz&fuga=1"
+        },
+        "not_indexed": {
+          "headers": {
+            "Host": [
+              "base.uri"
+            ],
+            "User-Agent": [
+              "curl/7.81.0"
+            ],
+            "Accept": [
+              "*/*"
+            ]
+          },
+          "params": {},
+          "body": "foo=baz&fuga=1"
+        }
+      }
+    }
     request = HTTP::Request.new("POST", "/hello", headers, form)
     request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
-    request2 = RecordedHTTPRequest.new(id: "foo", base_uri: URI.parse("http://base.uri"), path: "/hello_foo", method: "POST", headers: headers.to_h, body: another_form, params: {} of String => String)
+    request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
     (request2.score(request1)).should eq -1
   end
 end
