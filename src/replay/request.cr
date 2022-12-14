@@ -6,6 +6,7 @@ module Request
   end
 
   def score(other : Request) : Int32
+    -1
   end
 
   def proxy
@@ -14,4 +15,5 @@ module Request
 
   def metadatas : JSON::Any
   end
+
 end

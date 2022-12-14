@@ -47,10 +47,6 @@ class IncomingHTTPRequest
     "#{base_index}_#{@id}"
   }
 
-  def score(other : Request) : Int32
-    -1
-  end
-
   def proxy
     ProxyError | Record
     @http_request.headers["Host"] = @host_name
@@ -221,38 +217,6 @@ class RecordedHTTPRequest
       v = and.split("=")
       {v[0], v[1]?}
     end.to_h
-  end
-
-  def proxy
-    ProxyError | Record
-    @http_request.headers["Host"] = @host_name
-    client_response = HTTP::Client.new(@base_uri).exec(@http_request)
-    HTTPRecord.new(client_response, self) || ProxyError.new
-  end
-
-  def metadatas : JSON::Any
-    JSON.parse(JSON.build do |json|
-      json.object do
-        json.field "id", @id
-        json.field "host", @host_name
-        json.field "method", @method
-        json.field "path", @path
-        json.field "indexed" do
-          json.object do
-            json.field "headers", {} of String => Array(String)
-            json.field "params", {} of String => String
-            json.field "body", ""
-          end
-        end
-        json.field "not_indexed" do
-          json.object do
-            json.field "headers", @headers
-            json.field "params", @params
-            json.field "body", @body
-          end
-        end
-      end
-    end)
   end
 
   def match_query(query : Array(String)) : Request?
