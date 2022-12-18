@@ -84,8 +84,8 @@ class IncomingHTTPRequest
     method_query = query[1]?.try { |q| self.method == q }
     path_query = query[2]?.try { |q| self.path.includes?(q) }
     if (self.host_name == (query[0]?.try { |q| URI.parse(q).hostname } || "") &&
-       (method_query == nil || method_query == true) &&
-       (path_query == nil || path_query == true))
+       (method_query == nil || method_query) &&
+       (path_query == nil || path_query))
       self
     else
       nil
@@ -224,8 +224,8 @@ class RecordedHTTPRequest
     method_query = query[1]?.try { |q| self.method == q }
     path_query = query[2]?.try { |q| self.path.includes?(q) }
     if (self.host_name == (query[0]?.try { |q| URI.parse(q).hostname } || "") &&
-       (method_query == nil || method_query == true) &&
-       (path_query == nil || path_query == true))
+       (method_query == nil || method_query) &&
+       (path_query == nil || path_query))
       self
     else
       nil
