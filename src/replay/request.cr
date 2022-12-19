@@ -6,6 +6,7 @@ module Request
   end
 
   def score(other : Request) : Int32
+    -1
   end
 
   def proxy
