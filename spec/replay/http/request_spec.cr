@@ -71,6 +71,56 @@ describe IncomingHTTPRequest do
     (request2.score(request1)).should eq 1
   end
 
+  it "can compare json proeprties has json body condition" do
+    headers = HTTP::Headers{
+      "Content-Type" => "application/json",
+    }
+    json = %q{
+      {
+        "foo":"bar",
+        "baz":"qux",
+        "hoge": {
+          "fuga": 1,
+          "moge":"bar",
+          "baz" : [1,3,2]
+        }
+      }
+    }
+
+    recorded = %q{
+      {
+        "id": "bda3eaef950904c8ca0e307e45ea88a1",
+        "host": "base.uri",
+        "method": "POST",
+        "path": "/hello",
+        "indexed": {
+          "headers": {},
+          "params": {},
+          "body": {"hoge":{"fuga":1}}
+        },
+        "not_indexed": {
+          "headers": {
+            "Host": [
+              "base.uri"
+            ],
+            "User-Agent": [
+              "curl/7.81.0"
+            ],
+            "Accept": [
+              "*/*"
+            ]
+          },
+          "params": {},
+          "body": "{\"hoge\":{\"fuga\":1}}"
+        }
+      }
+    }
+    request = HTTP::Request.new("POST", "/hello", headers, json)
+    request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
+    request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
+    (request2.score(request1)).should eq 1
+  end
+
   it "can get multiple properties via server request" do
     headers = HTTP::Headers{"Content-Type" => "text/plain"}
     request = HTTP::Request.new("POST", "/hello", headers, "HELLO")

@@ -121,7 +121,8 @@ class RecordedHTTPRequest
     else
       raise "Request URI is collapsed : #{base_uri}"
     end
-    @body = request_json["indexed"]["body"].as_s
+    body_condition = request_json["indexed"]["body"]
+    @body = body_condition.as_h?.try{ |b| b.to_json } || body_condition.as_s
     @params = request_json["indexed"]["params"].as_h.reduce({} of String => String) do |acc, (k, v)|
       acc[k] = v.as_s
       acc
