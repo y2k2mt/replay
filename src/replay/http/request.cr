@@ -55,6 +55,10 @@ class IncomingHTTPRequest
   end
 
   def metadatas : JSON::Any
+    begin
+      body_condition = JSON.parse(@body)
+    rescue e
+    end
     JSON.parse(JSON.build do |json|
       json.object do
         json.field "id", @id
@@ -72,7 +76,7 @@ class IncomingHTTPRequest
           json.object do
             json.field "headers", @headers
             json.field "params", @params
-            json.field "body", @body
+            json.field "body", body_condition || @body
           end
         end
       end
@@ -122,7 +126,7 @@ class RecordedHTTPRequest
       raise "Request URI is collapsed : #{base_uri}"
     end
     body_condition = request_json["indexed"]["body"]
-    @body = body_condition.as_h?.try{ |b| b.to_json } || body_condition.as_s
+    @body = body_condition.as_h?.try { |b| b.to_json } || body_condition.as_s
     @params = request_json["indexed"]["params"].as_h.reduce({} of String => String) do |acc, (k, v)|
       acc[k] = v.as_s
       acc
