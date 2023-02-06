@@ -55,6 +55,10 @@ class IncomingHTTPRequest
   end
 
   def metadatas : JSON::Any
+    begin
+      body_condition = JSON.parse(@body)
+    rescue e
+    end
     JSON.parse(JSON.build do |json|
       json.object do
         json.field "id", @id
@@ -72,7 +76,7 @@ class IncomingHTTPRequest
           json.object do
             json.field "headers", @headers
             json.field "params", @params
-            json.field "body", @body
+            json.field "body", body_condition || @body
           end
         end
       end
@@ -83,9 +87,9 @@ class IncomingHTTPRequest
     # FIXME:implicit dependency
     method_query = query[1]?.try { |q| self.method == q }
     path_query = query[2]?.try { |q| self.path.includes?(q) }
-    if (self.host_name == (query[0]?.try { |q| URI.parse(q).hostname } || "") &&
+    if self.host_name == query[0]?.try { |q| URI.parse(q).hostname } || "" &&
        (method_query == nil || method_query) &&
-       (path_query == nil || path_query))
+       (path_query == nil || path_query)
       self
     else
       nil
@@ -121,7 +125,8 @@ class RecordedHTTPRequest
     else
       raise "Request URI is collapsed : #{base_uri}"
     end
-    @body = request_json["indexed"]["body"].as_s
+    body_condition = request_json["indexed"]["body"]
+    @body = body_condition.as_h?.try(&.to_json) || body_condition.as_s
     @params = request_json["indexed"]["params"].as_h.reduce({} of String => String) do |acc, (k, v)|
       acc[k] = v.as_s
       acc
@@ -142,7 +147,7 @@ class RecordedHTTPRequest
     Replay::Log.debug { "Comparing : #{self.base_index} and #{other.base_index}." }
     case other
     when IncomingHTTPRequest
-      if (other.base_index != self.base_index || !match_headers(self, other))
+      if other.base_index != self.base_index || !match_headers(self, other)
         -1
       else
         # TODO: Plaggable comparators
@@ -223,9 +228,9 @@ class RecordedHTTPRequest
     # FIXME:implicit dependency
     method_query = query[1]?.try { |q| self.method == q }
     path_query = query[2]?.try { |q| self.path.includes?(q) }
-    if (self.host_name == (query[0]?.try { |q| URI.parse(q).hostname } || "") &&
+    if self.host_name == query[0]?.try { |q| URI.parse(q).hostname } || "" &&
        (method_query == nil || method_query) &&
-       (path_query == nil || path_query))
+       (path_query == nil || path_query)
       self
     else
       nil

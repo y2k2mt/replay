@@ -49,7 +49,7 @@ class HTTPRecord
 
   def response(io : IO)
     @headers["Transfer-Encoding"]?.try do |encoding|
-      if (encoding == "chunked")
+      if encoding == "chunked"
         # Chunked transfer encoding not supported.
         @headers.delete("Transfer-Encoding")
       end
