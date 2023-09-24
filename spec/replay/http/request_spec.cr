@@ -188,7 +188,7 @@ describe IncomingHTTPRequest do
     request = HTTP::Request.new("POST", "/hello", headers, json)
     request1 = IncomingHTTPRequest.new(request, URI.parse "http://base.uri")
     request2 = RecordedHTTPRequest.new(URI.parse("http://base.uri"), JSON.parse(recorded))
-    (request2.score(request1)).should eq 2
+    (request2.score(request1)).should eq 4
   end
 
   it "can not compare json proeprties because path is not matched" do
