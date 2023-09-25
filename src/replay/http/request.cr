@@ -178,26 +178,42 @@ class RecordedHTTPRequest
   end
 
   private def match_json_internal(me : JSON::Any, other : JSON::Any) : Int32
-    me.as_h.keys.reduce(0) do |acc, key|
-      case value = other[key]
-      when .as_s?
-        value == me[key].as_s? ? acc + 1 : return -1
-      when .as_i?
-        value == me[key].as_i? ? acc + 1 : return -1
-      when .as_bool?
-        value == me[key].as_bool? ? acc + 1 : return -1
-      when .as_a?
-        value == me[key].as_a? ? acc + 1 : return -1
-      when .as_f?
-        value == me[key].as_f? ? acc + 1 : return -1
-      when .as_h?
-        me[key].as_h?.try do |_|
-          child = match_json_internal me[key], value
-          child == -1 ? return -1 : child + acc
-        end || acc
-      else
-        acc
-      end
+    case me
+    when .as_h?
+      me.as_h.keys.reduce(0) do |acc, key|
+        case value = other[key]
+        when .as_s?
+          value == me[key].as_s? ? acc + 1 : return -1
+        when .as_i?
+          value == me[key].as_i? ? acc + 1 : return -1
+        when .as_bool?
+          value == me[key].as_bool? ? acc + 1 : return -1
+        when .as_a?
+          me[key].as_a?.try do |me_array|
+            puts value.as_a
+            me_array.zip(value.as_a).reduce(0) do |ac, (m, v)|
+              puts m
+              puts v
+              ac + match_json_internal m, v
+            end
+          end || acc
+        when .as_f?
+          value == me[key].as_f? ? acc + 1 : return -1
+        when .as_h?
+          me[key].as_h?.try do |_|
+            child = match_json_internal me[key], value
+            child == -1 ? return -1 : child + acc
+          end || acc
+        else
+          acc
+        end
+      end || 0
+    when .as_i?
+      me == other.as_i? ? 1 : -1
+    when .as_s?
+      me == other.as_s? ? 1 : -1
+    when .as_bool?
+      me == other.as_bool? ? 1 : -1
     end || 0
   end
 
